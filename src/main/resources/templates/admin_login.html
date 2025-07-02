@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Login</title>
+</head>
+<body>
+<h2>🔐 Admin Login</h2>
+<form method="post" th:action="@{/admin/login}">
+    <label>Email: <input type="text" name="username"/></label><br><br>
+    <label>Password: <input type="password" name="password"/></label><br><br>
+    <button type="submit">Login</button>
+</form>
+
+<p th:if="${param.error}">❌ Invalid credentials</p>
+<p th:if="${param.logout}">✅ You have been logged out</p>
+</body>
+</html>

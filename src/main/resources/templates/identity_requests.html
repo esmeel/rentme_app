@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Identity Requests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 24px;
+        }
+        .request-card {
+            border: 1px solid #ccc;
+            padding: 16px;
+            margin-bottom: 24px;
+            border-radius: 8px;
+        }
+        .request-card h3 {
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            max-width: 480px;
+            margin-bottom: 8px;
+        }
+        button {
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pending Identity Verification Requests</h1>
+
+    <div th:if="${requests.isEmpty()}">
+        <p>No pending requests at the moment.</p>
+    </div>
+
+    <div th:each="req : ${requests}" class="request-card">
+        <h3 th:text="${req.name}">Full Name</h3>
+        <p><strong>Document Type:</strong> <span th:text="${req.documentType}">ID</span></p>
+        <p><strong>User ID:</strong> <span th:text="${req.user.id}">0</span></p>
+
+        <div th:each="img : ${req.imageUrls}">
+            <img th:src="${img}" style="max-height: 180px; margin: 8px; border: 1px solid #999;" />
+        </div>
+
+        <form th:action="@{'/admin/identity-requests/' + ${req.id} + '/approve'}" method="post" style="display:inline-block; margin-right:12px;">
+            <textarea name="note" rows="2" placeholder="Optional note (shown to user if needed)..."></textarea><br>
+            <button type="submit">✅ Approve</button>
+        </form>
+
+        <form th:action="@{'/admin/identity-requests/' + ${req.id} + '/reject'}" method="post" style="display:inline-block;">
+            <textarea name="note" rows="2" placeholder="Reason for rejection (will be sent to user)..."></textarea><br>
+            <button type="submit">❌ Reject</button>
+        </form>
+    </div>
+</body>
+</html>
