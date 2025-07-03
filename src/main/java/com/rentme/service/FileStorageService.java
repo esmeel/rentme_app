@@ -9,7 +9,7 @@ import java.nio.file.StandardCopyOption;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.Globals.EsIp;
+import com.Globals.IpLocal;
 
 @Service
 public class FileStorageService {

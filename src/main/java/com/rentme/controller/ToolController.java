@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.Globals.EsIp;
+import com.Globals.IpLocal;
 import com.rentme.data_transfer_objects.ToolResponseDTO;
 import com.rentme.model.Tool;
 import com.rentme.model.User;
