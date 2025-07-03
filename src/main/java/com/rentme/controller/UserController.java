@@ -106,7 +106,7 @@ public class UserController {
                 Path filePath = uploadPath.resolve(fileName);
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                String fullUrl = EsIp.theIP + "uploads/profile_pics/" + fileName;
+                String fullUrl = IpLocal.theIP + "uploads/profile_pics/" + fileName;
 
                 user.setProfilePicUrl(fullUrl);
                 userRepository.save(user);
@@ -135,7 +135,7 @@ public class UserController {
                 Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            return EsIp.theIP + "uploads/profile_pics/" + fileName;
+            return IpLocal.theIP + "uploads/profile_pics/" + fileName;
 
         } catch (Exception e) {
             e.printStackTrace();

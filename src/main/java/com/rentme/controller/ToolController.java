@@ -89,7 +89,7 @@ public class ToolController {
             tool.setAccessories(accessories);
             tool.setAccessoriesRequired(accessoriesRequired);
             tool.setRiskLevel(riskLevel);
-            tool.setImageUrl(EsIp.theIP + "uploads/tools_imgs/" + filename);
+            tool.setImageUrl(IpLocal.theIP + "uploads/tools_imgs/" + filename);
             tool.setOwner(owner);
             tool.setAvailable(available);
 

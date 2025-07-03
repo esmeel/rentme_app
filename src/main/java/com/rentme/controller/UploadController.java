@@ -23,7 +23,7 @@ public class UploadController {
 
         String savedName = fileUploadService.storeFile(file, "identity");
 
-        String fileUrl = EsIp.theIP + "uploads/identity/" + savedName;
+        String fileUrl = IpLocal.theIP + "uploads/identity/" + savedName;
 
         return ResponseEntity.ok(fileUrl);
     }
