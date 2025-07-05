@@ -51,7 +51,6 @@ public class RentalController {
     public final ScheduleEntryRepository scheduleEntryRepository;
     public final NotificationService notificationService;
 
-    // Manual constructor
     public RentalController(
             RentalService rentalService,
             JwtUtil jwtUtil,
@@ -136,7 +135,6 @@ public class RentalController {
                 .collect(Collectors.toList());
         System.out.println("To be sent:==> " + dtos);
         return ResponseEntity.ok(dtos);
-
     }
 
     @PostMapping("/respond")
@@ -144,22 +142,17 @@ public class RentalController {
     public ResponseEntity<?> respondToRentalRequest(
             @RequestBody RentalResponseRequest request) {
 
-        System.out.println("approve request:" + request);
-
         Optional<Rental> rentalOpt = rentalRepository.findById(request.getRentalId());
         if (rentalOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Rental request not found");
         }
-        System.out.println("RentalOpt to approve:" + rentalOpt);
         Rental rental = rentalOpt.get();
         rental.setStatus(request.isAccept() ? RentalStatus.ACCEPTED : RentalStatus.REJECTED);
         rental.setAccepted(request.isAccept());
-        System.out.println("Rental to approve:" + rental);
 
         rentalRepository.save(rental);
 
-        // ✅ إذا تمت الموافقة على الطلب، يتم جعل الأداة غير متاحة
         if (request.isAccept()) {
             if (rental.getTool() != null) {
                 rental.getTool().setAvailable(false);
@@ -174,9 +167,17 @@ public class RentalController {
                 room.setCreatedAt(LocalDateTime.now());
                 chatRoomRepository.save(room);
             }
-        }else   if (rental.getTool() != null) {
-                rental.getTool().setAvailable(true);
-            }
+        } else {
+            rental.getTool().setAvailable(true);
+            chatRoomRepository.findByRentalId(rental.getId())
+                    .ifPresent(chatRoomRepository::delete);
+
+            List<ScheduleEntry> entries = scheduleEntryRepository.findByRentalId(rental.getId());
+            scheduleEntryRepository.deleteAll(entries);
+
+            rentalRepository.deleteById(rental.getId());
+        }
+
         Long chatRoomId = null;
         if (request.isAccept()) {
             Optional<ChatRoom> chatRoomOpt = chatRoomRepository.findByRentalId(rental.getId());
@@ -184,7 +185,7 @@ public class RentalController {
                 chatRoomId = chatRoomOpt.get().getId();
             }
         }
-        // إرسال إشعار للمستأجر
+
         Notification notification = new Notification();
 
         notification.setSenderId(request.getSenderId());
@@ -193,21 +194,13 @@ public class RentalController {
         notification.setSenderName(rental.getOwner().getName());
         notification.setReceiverName(rental.getRenter().getName());
         notification.setType(request.isAccept() ? NotificationType.RENTAL_APPROVED : NotificationType.RENTAL_REJECTED);
-        // if (request.isAccept()) {
-        // notification.setRelatedId(chatRoomId); // لفتح التشات
-        // } else {
-        notification.setRelatedId(rental.getId()); // يمكن استخدامه لأي غرض لاحق (عرض الرفض...)
-        // }
-
+        notification.setRelatedId(rental.getId());
         notification.setMessage(request.isAccept()
                 ? rental.getOwner().getName() + " accepted to rent you " + rental.getTool().getName()
                 : rental.getOwner().getName() + " rejected to rent you " + rental.getTool().getName());
         notification.setCreatedAt(LocalDateTime.now());
         notification.setIsRead(false);
-
         notificationRepository.save(notification);
-
-        // حذف إشعار طلب الاستئجار القديم
         notificationRepository.deleteByTypeAndRelatedId(NotificationType.RENTAL_REQUEST, rental.getId());
 
         return ResponseEntity.ok("Response recorded and notification sent.");
@@ -218,25 +211,21 @@ public class RentalController {
         System.out.println("rentalId========================= " + dto.getRentalId());
 
         ScheduleEntry entry = scheduleEntryRepository.findByRentalId(dto.getRentalId()).get(0);
-        // .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Entry
-        // not found"));
-
         entry.setConfirmed(true);
         scheduleEntryRepository.save(entry);
 
-        // Reject all others
         scheduleEntryRepository.deleteByRentalIdAndIdNot(entry.getRentalId(), entry.getId());
- User sender = userRepository.findById(entry.getSenderId() )    .orElseThrow(() -> new RuntimeException("Receiver user not found"));;
-        // Send notification to renter
+        User sender = userRepository.findById(entry.getSenderId())
+                .orElseThrow(() -> new RuntimeException("Receiver user not found"));
+
         notificationService.sendNotification(
                 entry.getReceiverId(),
                 dto.getUserId(),
                 NotificationType.FINAL_SCHEDULE_CONFIRMED,
-                "You will meet with " +sender.getName() + " at: " + entry.getTimeInfo()
+                "You will meet with " + sender.getName() + " at: " + entry.getTimeInfo()
                         + "\nPlease confirm receiving ONLY when you recewivr the tool, to begin the rental.",
                 entry.getRentalId());
-
+        notificationService.deleteByTypeAndRental(NotificationType.SCHEDULE_PROPOSAL, dto.getRentalId());
         return ResponseEntity.ok("Meeting confirmed and renter notified.");
     }
-
 }

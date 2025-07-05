@@ -54,6 +54,9 @@ public class NotificationService {
 
   public void deleteByTypeAndRental(NotificationType type, Long rentalId) {
     List<Notification> notifs = notificationRepository.findByTypeAndRelatedId(type, rentalId);
+    if (notifs.isEmpty())
+      return;
+
     notificationRepository.deleteAll(notifs);
   }
 

@@ -124,6 +124,9 @@ public class NotificationController {
     System.out.println("🔔 Received DTO: " + dto);
 
     notificationService.sendLocationRequest(dto);
+    notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED, dto.getRentalId());
+    notificationService.deleteByTypeAndRental(NotificationType.RENTAL_REJECTED, dto.getRentalId());
+
     return ResponseEntity.ok("Location request sent");
   }
 
@@ -132,6 +135,10 @@ public class NotificationController {
     System.out.println("🔔 Received DTO: " + dto);
 
     notificationService.sendTimeRequest(dto);
+    // notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED,
+    // dto.getRentalId());
+    // notificationService.deleteByTypeAndRental(NotificationType.RENTAL_REJECTED,
+    // dto.getRentalId());
     return ResponseEntity.ok("Time request sent");
   }
 

@@ -99,17 +99,12 @@ public class ScheduleService {
     }
     scheduleEntryRepository.saveAll(otherEntries);
 
-    // إرسال إشعار إلى المالك بأن المستأجر قد أكد الموعد
-    // senderId هنا يشير إلى مالك الأداة (الذي أرسل المقترحات)
     notificationService.sendNotification(
         selected.getSenderId(),
         userId,
         NotificationType.OWNER_TIME_RESPONSE,
         "The renter selected a schedule time.",
         rentalId);
-    /*
-     * Long receiverId, Long senderId, NotificationType type,
-     * String message, Long rentalId)
-     */
+    notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE, rentalId);
   }
 }

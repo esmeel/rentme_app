@@ -56,6 +56,7 @@ public class LocationController {
     notif.setSenderName(sender.getName());
     notif.setNotes(dto.getNotes());
     notificationRepository.save(notif);
+    notificationRepository.deleteByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST, dto.getRentalId());
 
     return ResponseEntity.ok("Location sent.");
   }

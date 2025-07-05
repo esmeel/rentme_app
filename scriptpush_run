@@ -13,3 +13,5 @@ echo "Starting Spring Boot..."
 -------------------
 get the newer:
 git pull
+
+./mvnw spring-boot:run

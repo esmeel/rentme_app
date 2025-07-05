@@ -3,6 +3,16 @@ package com.rentme.data_transfer_objects;
 public class LocationSendRequestDTO {
   private Long senderId;
   private Long receiverId;
+  private Long rentalId;
+
+  public Long getRentalId() {
+    return this.rentalId;
+  }
+
+  public void setRentalId(Long rentalId) {
+    this.rentalId = rentalId;
+  }
+
   private double latitude;
   private double longitude;
   private String address;

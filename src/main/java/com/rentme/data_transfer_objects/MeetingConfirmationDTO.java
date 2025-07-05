@@ -1,8 +1,19 @@
 package com.rentme.data_transfer_objects;
 
+import com.rentme.model.NotificationType;
+
 public class MeetingConfirmationDTO {
   private Long rentalId;
   private Long userId;
+  private NotificationType notiType;
+
+  public NotificationType getNotiType() {
+    return this.notiType;
+  }
+
+  public void setNotiType(NotificationType notiType) {
+    this.notiType = notiType;
+  }
 
   // getters and setters
 

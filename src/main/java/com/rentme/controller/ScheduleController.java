@@ -55,6 +55,7 @@ public class ScheduleController {
   @PostMapping("/send")
   public ResponseEntity<String> sendSchedule(@RequestBody ScheduleRequestDTO request) {
     scheduleService.processSchedule(request);
+    notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_REQUEST, request.getRentalId());
     return ResponseEntity.ok("Schedule received and saved successfully");
   }
 
@@ -67,6 +68,7 @@ public class ScheduleController {
   @PostMapping("/selected")
   public ResponseEntity<?> addSelectedSchedule(@RequestBody ScheduleConfirmationRequest request) {
     try {
+      notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE, request.getRentalId());
 
       scheduleService.addSelectedSchedule(
           request.getScheduleId(),
