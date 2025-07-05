@@ -174,7 +174,9 @@ public class RentalController {
                 room.setCreatedAt(LocalDateTime.now());
                 chatRoomRepository.save(room);
             }
-        }
+        }else   if (rental.getTool() != null) {
+                rental.getTool().setAvailable(true);
+            }
         Long chatRoomId = null;
         if (request.isAccept()) {
             Optional<ChatRoom> chatRoomOpt = chatRoomRepository.findByRentalId(rental.getId());
@@ -224,14 +226,14 @@ public class RentalController {
 
         // Reject all others
         scheduleEntryRepository.deleteByRentalIdAndIdNot(entry.getRentalId(), entry.getId());
-
+ User sender = userRepository.findById(entry.getSenderId() )    .orElseThrow(() -> new RuntimeException("Receiver user not found"));;
         // Send notification to renter
         notificationService.sendNotification(
-                entry.getSenderId(),
+                entry.getReceiverId(),
                 dto.getUserId(),
-                NotificationType.OWNER_TIME_RESPONSE,
-                "You will meet with " + entry.getSenderId() + " at: " + entry.getTimeInfo()
-                        + "\nPlease confirm to begin the rental.",
+                NotificationType.FINAL_SCHEDULE_CONFIRMED,
+                "You will meet with " +sender.getName() + " at: " + entry.getTimeInfo()
+                        + "\nPlease confirm receiving ONLY when you recewivr the tool, to begin the rental.",
                 entry.getRentalId());
 
         return ResponseEntity.ok("Meeting confirmed and renter notified.");
