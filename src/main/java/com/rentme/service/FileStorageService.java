@@ -34,7 +34,7 @@ public class FileStorageService {
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
             // المسار الذي يُستخدم من جهة الواجهة (Flutter)
-            return IpLocal.theIP + "uploads/users/" + filename;
+            return IpLocal. get() + "uploads/users/" + filename;
 
         } catch (IOException e) {
             e.printStackTrace();

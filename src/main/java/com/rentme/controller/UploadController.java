@@ -26,7 +26,7 @@ public class UploadController {
 
         String savedName = fileUploadService.storeFile(file, "identity");
 
-        String fileUrl = IpLocal.theIP + "uploads/identity/" + savedName;
+        String fileUrl = IpLocal. get() + "uploads/identity/" + savedName;
 
         return ResponseEntity.ok(fileUrl);
     }
