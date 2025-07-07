@@ -36,10 +36,8 @@ public class NotificationController {
   private final UserRepository userRepository;
   private final JwtUtil jwtUtil;
 
-  public NotificationController(
-      NotificationService notificationService,
-      NotificationRepository notificationRepository,
-      UserRepository userRepository,
+  public NotificationController(NotificationService notificationService,
+      NotificationRepository notificationRepository, UserRepository userRepository,
       JwtUtil jwtUtil) {
 
     this.notificationService = notificationService;
@@ -71,8 +69,7 @@ public class NotificationController {
   }
 
   @DeleteMapping("/notification/by-type")
-  public ResponseEntity<?> deleteByTypeAndRental(
-      @RequestParam NotificationType type,
+  public ResponseEntity<?> deleteByTypeAndRental(@RequestParam NotificationType type,
       @RequestParam Long rentalId) {
     notificationService.deleteByTypeAndRental(type, rentalId);
     return ResponseEntity.ok().build();
@@ -124,8 +121,14 @@ public class NotificationController {
     System.out.println("🔔 Received DTO: " + dto);
 
     notificationService.sendLocationRequest(dto);
-    notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED, dto.getRentalId());
-    notificationService.deleteByTypeAndRental(NotificationType.RENTAL_REJECTED, dto.getRentalId());
+
+    boolean hasTimeRequest = notificationRepository
+        .findByTypeAndRelatedId(NotificationType.OWNER_TIME_REQUEST, dto.getRentalId()).size() > 0;
+
+    if (hasTimeRequest) {
+      notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED,
+          dto.getRentalId());
+    }
 
     return ResponseEntity.ok("Location request sent");
   }
@@ -135,10 +138,16 @@ public class NotificationController {
     System.out.println("🔔 Received DTO: " + dto);
 
     notificationService.sendTimeRequest(dto);
-    // notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED,
-    // dto.getRentalId());
-    // notificationService.deleteByTypeAndRental(NotificationType.RENTAL_REJECTED,
-    // dto.getRentalId());
+
+    boolean hasLocationRequest = notificationRepository
+        .findByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST, dto.getRentalId())
+        .size() > 0;
+
+    if (hasLocationRequest) {
+      notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED,
+          dto.getRentalId());
+    }
+
     return ResponseEntity.ok("Time request sent");
   }
 
@@ -147,5 +156,4 @@ public class NotificationController {
     notificationService.markAllAsRead(userId);
     return ResponseEntity.ok("Notifications marked as read");
   }
-
 }
