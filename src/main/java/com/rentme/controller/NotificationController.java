@@ -122,13 +122,13 @@ public class NotificationController {
 
     notificationService.sendLocationRequest(dto);
 
-    boolean hasTimeRequest = notificationRepository
-        .findByTypeAndRelatedId(NotificationType.OWNER_TIME_REQUEST, dto.getRentalId()).size() > 0;
+    // boolean hasTimeRequest = notificationRepository
+    // .findByTypeAndRelatedId(NotificationType.OWNER_TIME_REQUEST, dto.getRentalId()).size() > 0;
 
-    if (hasTimeRequest) {
-      notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED,
-          dto.getRentalId());
-    }
+    // if (hasTimeRequest) {
+    // notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED,
+    // dto.getRentalId());
+    // }
 
     return ResponseEntity.ok("Location request sent");
   }
@@ -139,14 +139,14 @@ public class NotificationController {
 
     notificationService.sendTimeRequest(dto);
 
-    boolean hasLocationRequest = notificationRepository
-        .findByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST, dto.getRentalId())
-        .size() > 0;
+    // boolean hasLocationRequest = notificationRepository
+    // .findByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST, dto.getRentalId())
+    // .size() > 0;
 
-    if (hasLocationRequest) {
-      notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED,
-          dto.getRentalId());
-    }
+    // if (hasLocationRequest) {
+    // notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED,
+    // dto.getRentalId());
+    // }
 
     return ResponseEntity.ok("Time request sent");
   }

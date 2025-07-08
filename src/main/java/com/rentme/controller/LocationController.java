@@ -16,6 +16,8 @@ import com.rentme.model.User;
 import com.rentme.repository.NotificationRepository;
 import com.rentme.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @RestController
 @RequestMapping("/api/location")
 public class LocationController {
@@ -27,6 +29,7 @@ public class LocationController {
   private UserRepository userRepository;
 
   @PostMapping("/send")
+  @Transactional
   public ResponseEntity<?> sendLocation(@RequestBody LocationSendRequestDTO dto) {
     User sender = userRepository.findById(dto.getSenderId()).orElse(null);
     User receiver = userRepository.findById(dto.getReceiverId()).orElse(null);
@@ -56,7 +59,9 @@ public class LocationController {
     notif.setSenderName(sender.getName());
     notif.setNotes(dto.getNotes());
     notificationRepository.save(notif);
-    notificationRepository.deleteByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST, dto.getRentalId());
+    System.out.println("will delete notification with rental id = " + dto.getRentalId());
+    notificationRepository.deleteByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST,
+        dto.getRentalId());
 
     return ResponseEntity.ok("Location sent.");
   }
