@@ -27,6 +27,33 @@ public class Notification {
   private String toolName;
   private String address;
   private String notes;
+  @Column(name = "meeting") // تطابق مع اسم العمود في قاعدة البيانات
+  private String meeting;
+
+  public String getMeeting() {
+    return this.meeting;
+  }
+
+  public void setMeeting(String meeting) {
+    this.meeting = meeting;
+  }
+
+  Double latitude;
+
+  Double longitude;
+
+  boolean locationRequested = false;
+  boolean timeRequested = false;
+
+  @Enumerated(EnumType.STRING)
+  private NotificationType type;
+
+  @Column(name = "is_read")
+  private boolean read;
+
+  private Long relatedId;
+
+  private LocalDateTime createdAt = LocalDateTime.now();
 
   public String getNotes() {
     return this.notes;
@@ -35,9 +62,6 @@ public class Notification {
   public void setNotes(String notes) {
     this.notes = notes;
   }
-
-  Double latitude;
-  Double longitude;
 
   public String getAddress() {
     return this.address;
@@ -74,19 +98,6 @@ public class Notification {
   public void setRead(boolean read) {
     this.read = read;
   }
-
-  boolean locationRequested = false;
-  boolean timeRequested = false;
-
-  @Enumerated(EnumType.STRING)
-  private NotificationType type;
-
-  @Column(name = "is_read")
-  private boolean read;
-
-  private Long relatedId;
-
-  private LocalDateTime createdAt = LocalDateTime.now();
 
   public boolean isLocationRequested() {
     return this.locationRequested;
@@ -216,26 +227,15 @@ public class Notification {
 
   @Override
   public String toString() {
-    return "{" +
-        " id='" + getId() + "'" +
-        ", receiverId='" + getReceiverId() + "'" +
-        ", receiverName='" + getReceiverName() + "'" +
-        ", senderId='" + getSenderId() + "'" +
-        ", senderName='" + getSenderName() + "'" +
-        ", message='" + getMessage() + "'" +
-        ", toolPicUrl='" + getToolPicUrl() + "'" +
-        ", toolName='" + getToolName() + "'" +
-        ", address='" + getAddress() + "'" +
-        ", notes='" + getNotes() + "'" +
-        ", latitude='" + getLatitude() + "'" +
-        ", longitude='" + getLongitude() + "'" +
-        ", locationRequested='" + isLocationRequested() + "'" +
-        ", timeRequested='" + isTimeRequested() + "'" +
-        ", type='" + getType() + "'" +
-        ", read='" + isRead() + "'" +
-        ", relatedId='" + getRelatedId() + "'" +
-        ", createdAt='" + getCreatedAt() + "'" +
-        "}";
+    return "{" + " id='" + getId() + "'" + ", receiverId='" + getReceiverId() + "'"
+        + ", receiverName='" + getReceiverName() + "'" + ", senderId='" + getSenderId() + "'"
+        + ", senderName='" + getSenderName() + "'" + ", message='" + getMessage() + "'"
+        + ", toolPicUrl='" + getToolPicUrl() + "'" + ", toolName='" + getToolName() + "'"
+        + ", address='" + getAddress() + "'" + ", notes='" + getNotes() + "'" + ", latitude='"
+        + getLatitude() + "'" + ", longitude='" + getLongitude() + "'" + ", locationRequested='"
+        + isLocationRequested() + "'" + ", timeRequested='" + isTimeRequested() + "'" + ", type='"
+        + getType() + "'" + ", read='" + isRead() + "'" + ", relatedId='" + getRelatedId() + "'"
+        + ", createdAt='" + getCreatedAt() + "'" + "}";
   }
 
 }

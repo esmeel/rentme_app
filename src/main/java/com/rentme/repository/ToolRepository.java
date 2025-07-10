@@ -12,6 +12,12 @@ public interface ToolRepository extends JpaRepository<Tool, Long> {
 
   List<Tool> findByOwnerIdAndAvailableFalse(Long ownerId);
 
+  List<Tool> findAllByOrderByIdDesc();
+
+  List<Tool> findAllByOrderByAddedAtDesc();
+
+
+
 }
 
 

@@ -32,8 +32,7 @@ public class NotificationService {
     User receiver = userRepository.findById(receiverId)
         .orElseThrow(() -> new RuntimeException("Receiver user not found"));
 
-    User sender = userRepository.findById(senderId)
-        .orElse(null);
+    User sender = userRepository.findById(senderId).orElse(null);
 
     Notification notification = new Notification();
     notification.setReceiverId(receiver.getId());
@@ -45,10 +44,22 @@ public class NotificationService {
     notification.setSenderName(sender.getName());
     notification.setReceiverName(receiver.getName());
     notification.setCreatedAt(LocalDateTime.now());
+    if (type == NotificationType.FINAL_SCHEDULE_CONFIRMED)
+      notification.setMeeting(message);
+
     System.err.println(" Notification to save: " + notification.toString());
 
     notificationRepository.save(notification);
     System.out.println("🔔 Notification saved for user " + receiver.getEmail());
+
+  }
+
+  public void sendNotification(Notification notification) {
+
+
+    System.err.println(" Notification to save: " + notification.toString());
+
+    notificationRepository.save(notification);
 
   }
 
@@ -61,7 +72,7 @@ public class NotificationService {
   }
 
   public void sendLocationRequest(LocationOrTimeRequestDTO dto) {
-
+    System.out.println("dto.getMeeting()==" + dto.getMeeting());
     Notification notif = new Notification();
     notif.setSenderId(dto.getSenderId());
     notif.setReceiverId(dto.getReceiverId());
@@ -70,6 +81,9 @@ public class NotificationService {
     notif.setMessage(dto.getSenderNamne() + " is requesting the pickup location");
     notif.setCreatedAt(LocalDateTime.now());
     notif.setIsRead(false);
+
+    notif.setMeeting(dto.getMeeting());
+
     notif.setToolPicUrl(dto.getToolPicUrl());
 
     notificationRepo.save(notif);

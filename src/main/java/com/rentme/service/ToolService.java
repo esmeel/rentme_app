@@ -23,7 +23,7 @@ public class ToolService {
     }
 
     public List<Tool> findAll() {
-        return toolRepository.findAll();
+        return toolRepository.findAllByOrderByAddedAtDesc();
     }
 
     public Tool findById(Long id) {

@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -68,7 +69,8 @@ public class ToolController {
             String powerType = request.getParameter("powerType");
             String toolCondition = request.getParameter("toolCondition");
             String accessories = request.getParameter("accessories");
-            boolean accessoriesRequired = Boolean.parseBoolean(request.getParameter("accessoriesRequired"));
+            boolean accessoriesRequired =
+                    Boolean.parseBoolean(request.getParameter("accessoriesRequired"));
             boolean available = true;
             int riskLevel = Integer.parseInt(request.getParameter("riskLevel"));
 
@@ -89,8 +91,10 @@ public class ToolController {
             tool.setAccessories(accessories);
             tool.setAccessoriesRequired(accessoriesRequired);
             tool.setRiskLevel(riskLevel);
-            tool.setImageUrl(IpLocal. get() + "uploads/tools_imgs/" + filename);
+            tool.setImageUrl(IpLocal.get() + "uploads/tools_imgs/" + filename);
             tool.setOwner(owner);
+            tool.setAddedAt(LocalDateTime.now()); // أو new Date() إذا كنت تستخدم Date
+            tool.setIsEdited(false);
             tool.setAvailable(available);
 
             Tool savedTool = toolService.save(tool);
@@ -102,8 +106,7 @@ public class ToolController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getToolById(@PathVariable Long id) {
-        return toolRepository.findById(id)
-                .map(tool -> ResponseEntity.ok(new ToolResponseDTO(tool)))
+        return toolRepository.findById(id).map(tool -> ResponseEntity.ok(new ToolResponseDTO(tool)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -122,9 +125,7 @@ public class ToolController {
     }
 
     @PutMapping("/update/{toolId}")
-    public ResponseEntity<?> updateTool(
-            HttpServletRequest request,
-            @PathVariable Long toolId,
+    public ResponseEntity<?> updateTool(HttpServletRequest request, @PathVariable Long toolId,
             @RequestBody Map<String, String> data) {
         String token = jwtUtil.extractTokenFromRequest(request);
         String email = jwtUtil.extractUsername(token);
@@ -143,6 +144,9 @@ public class ToolController {
         tool.setAccessories(data.get("accessories"));
         tool.setAccessoriesRequired(Boolean.parseBoolean(data.get("accessoriesRequired")));
         tool.setRiskLevel(Integer.parseInt(data.get("riskLevel")));
+        tool.setIsEdited(true);
+        tool.setEditedAt(LocalDateTime.now());
+
 
         Tool updatedTool = toolService.save(tool);
         return ResponseEntity.ok(updatedTool);
@@ -157,10 +161,10 @@ public class ToolController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllTools() {
-        List<Tool> tools = toolService.findAll(); // تأكّد أن هذه موجودة في ToolService
-        List<ToolResponseDTO> response = tools.stream()
-                .map(ToolResponseDTO::new)
-                .collect(Collectors.toList());
+        List<Tool> tools = toolRepository.findAllByOrderByAddedAtDesc(); // تأكّد أن هذه موجودة في
+                                                                         // ToolService
+        List<ToolResponseDTO> response =
+                tools.stream().map(ToolResponseDTO::new).collect(Collectors.toList());
 
         // response.toArray());
         return ResponseEntity.ok(response);
@@ -170,9 +174,8 @@ public class ToolController {
     public ResponseEntity<?> getToolsByOwner(@PathVariable Long ownerId) {
 
         List<Tool> tools = toolService.findByOwnerId(ownerId);
-        List<ToolResponseDTO> response = tools.stream()
-                .map(ToolResponseDTO::new)
-                .collect(Collectors.toList());
+        List<ToolResponseDTO> response =
+                tools.stream().map(ToolResponseDTO::new).collect(Collectors.toList());
 
         // response.toArray());
         return ResponseEntity.ok(response);

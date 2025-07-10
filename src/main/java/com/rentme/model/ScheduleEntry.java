@@ -19,23 +19,24 @@ public class ScheduleEntry {
   private Long rentalId;
   private Long relatedId;
 
+  private String date;
+
+  private String fromTime;
+
+  private String toTime;
+
+  private String notes;
+
+  private boolean confirmed;
+
+  public ScheduleEntry() {}
+
   public Long getRelatedId() {
     return this.relatedId;
   }
 
   public void setRelatedId(Long relatedId) {
     this.relatedId = relatedId;
-  }
-
-  private String date;
-
-  private String fromTime;
-
-  private String toTime;
-  private String notes;
-  private boolean confirmed;
-
-  public ScheduleEntry() {
   }
 
   public String getTimeInfo() {

@@ -44,7 +44,7 @@ public class LocationController {
       userRepository.save(sender);
     }
     String message = sender.getName() + " sent a pickup location:\n" + dto.getAddress();
-
+    System.out.println("meeting at LOCATION_SENT" + dto.getMeeting());
     Notification notif = new Notification();
     notif.setSenderId(dto.getSenderId());
     notif.setReceiverId(dto.getReceiverId());
@@ -58,6 +58,7 @@ public class LocationController {
     notif.setAddress(dto.getAddress());
     notif.setSenderName(sender.getName());
     notif.setNotes(dto.getNotes());
+    notif.setMeeting(dto.getMeeting());
     notificationRepository.save(notif);
     System.out.println("will delete notification with rental id = " + dto.getRentalId());
     notificationRepository.deleteByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST,

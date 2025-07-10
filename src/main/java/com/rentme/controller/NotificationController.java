@@ -122,13 +122,9 @@ public class NotificationController {
 
     notificationService.sendLocationRequest(dto);
 
-    // boolean hasTimeRequest = notificationRepository
-    // .findByTypeAndRelatedId(NotificationType.OWNER_TIME_REQUEST, dto.getRentalId()).size() > 0;
+    notificationService.deleteByTypeAndRental(NotificationType.FINAL_SCHEDULE_CONFIRMED,
+        dto.getRentalId());
 
-    // if (hasTimeRequest) {
-    // notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED,
-    // dto.getRentalId());
-    // }
 
     return ResponseEntity.ok("Location request sent");
   }
@@ -139,14 +135,9 @@ public class NotificationController {
 
     notificationService.sendTimeRequest(dto);
 
-    // boolean hasLocationRequest = notificationRepository
-    // .findByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST, dto.getRentalId())
-    // .size() > 0;
 
-    // if (hasLocationRequest) {
-    // notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED,
-    // dto.getRentalId());
-    // }
+    notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED, dto.getRentalId());
+
 
     return ResponseEntity.ok("Time request sent");
   }

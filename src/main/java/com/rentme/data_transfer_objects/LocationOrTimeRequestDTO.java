@@ -6,6 +6,15 @@ public class LocationOrTimeRequestDTO {
   private Long receiverId;
   private String senderNamne;
   private String toolPicUrl;
+  private String meeting;
+
+  public String getMeeting() {
+    return this.meeting;
+  }
+
+  public void setMeeting(String meeting) {
+    this.meeting = meeting;
+  }
 
   public String getToolPicUrl() {
     return this.toolPicUrl;
@@ -50,11 +59,8 @@ public class LocationOrTimeRequestDTO {
 
   @Override
   public String toString() {
-    return "{" +
-        " rentalId='" + getRentalId() + "'" +
-        ", senderId='" + getSenderId() + "'" +
-        ", receiverId='" + getReceiverId() + "'" +
-        ", senderNamne='" + getSenderNamne() + "'" +
-        "}";
+    return "{" + " rentalId='" + getRentalId() + "'" + ", senderId='" + getSenderId() + "'"
+        + ", receiverId='" + getReceiverId() + "'" + ", senderNamne='" + getSenderNamne() + "'"
+        + "}";
   }
 }

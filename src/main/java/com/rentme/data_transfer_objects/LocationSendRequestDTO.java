@@ -5,6 +5,26 @@ public class LocationSendRequestDTO {
   private Long receiverId;
   private Long rentalId;
 
+  private double latitude;
+
+  private double longitude;
+
+  private String address;
+  private String notes;
+  private String meeting;
+
+  public String getMeeting() {
+    return this.meeting;
+  }
+
+  public void setMeeting(String meeting) {
+    this.meeting = meeting;
+  }
+
+
+
+  private boolean isDefault;
+
   public Long getRentalId() {
     return this.rentalId;
   }
@@ -12,13 +32,6 @@ public class LocationSendRequestDTO {
   public void setRentalId(Long rentalId) {
     this.rentalId = rentalId;
   }
-
-  private double latitude;
-  private double longitude;
-  private String address;
-  private String notes;
-
-  private boolean isDefault;
 
   public String getNotes() {
     return this.notes;

@@ -1,6 +1,8 @@
 package com.rentme.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.rentme.data_transfer_objects.ScheduleConfirmationRequest;
 import com.rentme.data_transfer_objects.ScheduleRequestDTO;
+import com.rentme.model.Notification;
 import com.rentme.model.NotificationType;
 import com.rentme.model.Rental;
 import com.rentme.model.ScheduleEntry;
@@ -35,10 +38,9 @@ public class ScheduleController {
   private final UserRepository userRepository;
   private final NotificationService notificationService;
 
-  public ScheduleController(ScheduleService scheduleService, ScheduleEntryRepository scheduleEntryRepository,
-      RentalRepository rentalRepository,
-      UserRepository userRepository,
-      NotificationService notificationService) {
+  public ScheduleController(ScheduleService scheduleService,
+      ScheduleEntryRepository scheduleEntryRepository, RentalRepository rentalRepository,
+      UserRepository userRepository, NotificationService notificationService) {
     this.scheduleService = scheduleService;
     this.scheduleEntryRepository = scheduleEntryRepository;
     this.rentalRepository = rentalRepository;
@@ -55,7 +57,8 @@ public class ScheduleController {
   @PostMapping("/send")
   public ResponseEntity<String> sendSchedule(@RequestBody ScheduleRequestDTO request) {
     scheduleService.processSchedule(request);
-    notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_REQUEST, request.getRentalId());
+    notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_REQUEST,
+        request.getRentalId());
     return ResponseEntity.ok("Schedule received and saved successfully");
   }
 
@@ -68,18 +71,42 @@ public class ScheduleController {
   @PostMapping("/selected")
   public ResponseEntity<?> addSelectedSchedule(@RequestBody ScheduleConfirmationRequest request) {
     try {
-      notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE, request.getRentalId());
+      notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE,
+          request.getRentalId());
 
-      scheduleService.addSelectedSchedule(
-          request.getScheduleId(),
-          request.getRentalId(),
+      scheduleService.addSelectedSchedule(request.getScheduleId(), request.getRentalId(),
           request.getUserId());
+      User sender = userRepository.getUserById(request.getUserId());
+      // get selected schedule:
+      ScheduleEntry selected = scheduleEntryRepository.findById(request.getScheduleId())
+          .orElseThrow(() -> new RuntimeException("Schedule entry not found"));
+
+      if (!Objects.equals(selected.getRentalId(), request.getRentalId())) {
+        throw new RuntimeException("Rental ID mismatch");
+      }
+      // send notification:
+      Notification notif = new Notification();
+      notif.setSenderId(selected.getReceiverId());// ?
+      notif.setReceiverId(selected.getSenderId());
+      notif.setMessage(sender.getName() + " wants to meet you on " + selected.getDate()
+          + " between " + selected.getFromTime() + " and " + selected.getToTime());
+
+      notif.setType(NotificationType.OWNER_TIME_RESPONSE);
+      notif.setRelatedId(selected.getRentalId());
+      notif.setCreatedAt(LocalDateTime.now());
+      notif.setIsRead(false);
+
+      notif.setSenderName(sender.getName());
+      notificationService.sendNotification(notif);
+
+
+
       return ResponseEntity.ok("Schedule confirmed successfully.");
     } catch (Exception e) {
-      return ResponseEntity
-          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body("Error: " + e.getMessage());
     }
+
   }
 
   @PostMapping("/confirm")
@@ -105,16 +132,12 @@ public class ScheduleController {
 
     // Compose message
     String dateTime = entry.getDate() + " " + entry.getFromTime(); // Customize formatting as needed
-    String message = "You will meet with " + sender.getName() + " at " + dateTime +
-        "Important: You must tap 'Confirm Received' once you receive the tool.";
+    String message = "You will meet with " + sender.getName() + " at " + dateTime
+        + "Important: You must tap 'Confirm Received' once you receive the tool.";
 
     // Send notification to renter (the receiver of the original proposal)
-    notificationService.sendNotification(
-        receiver.getId(),
-        sender.getId(),
-        NotificationType.SCHEDULE_CONFIRMED,
-        message,
-        rental.getId());
+    // notificationService.sendNotification(receiver.getId(), sender.getId(),
+    // NotificationType.SCHEDULE_CONFIRMED, message, rental.getId());
 
     return ResponseEntity.ok("Schedule confirmed and renter notified.");
   }

@@ -51,13 +51,9 @@ public class RentalController {
     public final ScheduleEntryRepository scheduleEntryRepository;
     public final NotificationService notificationService;
 
-    public RentalController(
-            RentalService rentalService,
-            JwtUtil jwtUtil,
-            UserRepository userRepository,
-            RentalRepository rentalRepository,
-            NotificationRepository notificationRepository,
-            ChatRoomRepository chatRoomRepository,
+    public RentalController(RentalService rentalService, JwtUtil jwtUtil,
+            UserRepository userRepository, RentalRepository rentalRepository,
+            NotificationRepository notificationRepository, ChatRoomRepository chatRoomRepository,
             ScheduleEntryRepository scheduleEntryRepository,
             NotificationService notificationService) {
         this.rentalService = rentalService;
@@ -71,37 +67,29 @@ public class RentalController {
     }
 
     @GetMapping("/exists")
-    public ResponseEntity<Boolean> rentalExists(
-            @RequestParam Long toolId,
+    public ResponseEntity<Boolean> rentalExists(@RequestParam Long toolId,
             @RequestParam Long renterId) {
-        boolean exists = rentalRepository.existsByToolIdAndRenterId(
-                toolId, renterId);
+        boolean exists = rentalRepository.existsByToolIdAndRenterId(toolId, renterId);
         return ResponseEntity.ok(exists);
     }
 
     @PostMapping
     public ResponseEntity<?> createRental(@RequestBody RentalRequest request) {
-        boolean exists = rentalRepository.existsByToolIdAndRenterId(
-                request.getToolId(), request.getRenterId());
+        boolean exists = rentalRepository.existsByToolIdAndRenterId(request.getToolId(),
+                request.getRenterId());
 
         if (exists) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
+            return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("You already submitted a rental request for this tool.");
         }
-        Rental rental = rentalService.createRental(
-                request.getToolId(),
-                request.getRenterId(),
-                request.getStartDate(),
-                request.getEndDate(),
-                notificationRepository);
+        Rental rental = rentalService.createRental(request.getToolId(), request.getRenterId(),
+                request.getStartDate(), request.getEndDate(), notificationRepository);
         System.out.println(rental.toString());
         return ResponseEntity.ok(rental);
     }
 
     @PutMapping("/{rentalId}/status")
-    public ResponseEntity<Rental> updateRentalStatus(
-            @PathVariable Long rentalId,
+    public ResponseEntity<Rental> updateRentalStatus(@PathVariable Long rentalId,
             @RequestParam RentalStatus status) {
         Rental rental = rentalService.updateStatus(rentalId, status);
         return ResponseEntity.ok(rental);
@@ -130,22 +118,19 @@ public class RentalController {
             return ResponseEntity.status(404).body("Owner not found");
         }
         List<Rental> rentals = rentalService.getIncomingRequests(owner);
-        List<RentalResponseDTO> dtos = rentals.stream()
-                .map(RentalResponseDTO::new)
-                .collect(Collectors.toList());
+        List<RentalResponseDTO> dtos =
+                rentals.stream().map(RentalResponseDTO::new).collect(Collectors.toList());
         System.out.println("To be sent:==> " + dtos);
         return ResponseEntity.ok(dtos);
     }
 
     @PostMapping("/respond")
     @Transactional
-    public ResponseEntity<?> respondToRentalRequest(
-            @RequestBody RentalResponseRequest request) {
+    public ResponseEntity<?> respondToRentalRequest(@RequestBody RentalResponseRequest request) {
 
         Optional<Rental> rentalOpt = rentalRepository.findById(request.getRentalId());
         if (rentalOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Rental request not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rental request not found");
         }
         Rental rental = rentalOpt.get();
         rental.setStatus(request.isAccept() ? RentalStatus.ACCEPTED : RentalStatus.REJECTED);
@@ -169,8 +154,7 @@ public class RentalController {
             }
         } else {
             rental.getTool().setAvailable(true);
-            chatRoomRepository.findByRentalId(rental.getId())
-                    .ifPresent(chatRoomRepository::delete);
+            chatRoomRepository.findByRentalId(rental.getId()).ifPresent(chatRoomRepository::delete);
 
             List<ScheduleEntry> entries = scheduleEntryRepository.findByRentalId(rental.getId());
             scheduleEntryRepository.deleteAll(entries);
@@ -193,15 +177,19 @@ public class RentalController {
         notification.setToolPicUrl(rental.getToolPic());
         notification.setSenderName(rental.getOwner().getName());
         notification.setReceiverName(rental.getRenter().getName());
-        notification.setType(request.isAccept() ? NotificationType.RENTAL_APPROVED : NotificationType.RENTAL_REJECTED);
+        notification.setType(request.isAccept() ? NotificationType.RENTAL_APPROVED
+                : NotificationType.RENTAL_REJECTED);
         notification.setRelatedId(rental.getId());
         notification.setMessage(request.isAccept()
-                ? rental.getOwner().getName() + " accepted to rent you " + rental.getTool().getName()
-                : rental.getOwner().getName() + " rejected to rent you " + rental.getTool().getName());
+                ? rental.getOwner().getName() + " accepted to rent you "
+                        + rental.getTool().getName()
+                : rental.getOwner().getName() + " rejected to rent you "
+                        + rental.getTool().getName());
         notification.setCreatedAt(LocalDateTime.now());
         notification.setIsRead(false);
         notificationRepository.save(notification);
-        notificationRepository.deleteByTypeAndRelatedId(NotificationType.RENTAL_REQUEST, rental.getId());
+        notificationRepository.deleteByTypeAndRelatedId(NotificationType.RENTAL_REQUEST,
+                rental.getId());
 
         return ResponseEntity.ok("Response recorded and notification sent.");
     }
@@ -210,7 +198,17 @@ public class RentalController {
     public ResponseEntity<?> confirmMeeting(@RequestBody MeetingConfirmationDTO dto) {
         System.out.println("rentalId========================= " + dto.getRentalId());
 
-        ScheduleEntry entry = scheduleEntryRepository.findByRentalId(dto.getRentalId()).get(0);
+        // ScheduleEntry entry = scheduleEntryRepository.findByRentalId(dto.getRentalId()).get(0);
+        List<ScheduleEntry> entries = scheduleEntryRepository.findByRentalId(dto.getRentalId());
+
+        if (entries.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No schedule entries found for rental ID: " + dto.getRentalId());
+        }
+
+        ScheduleEntry entry = entries.get(0);
+
+
         entry.setConfirmed(true);
         scheduleEntryRepository.save(entry);
 
@@ -218,14 +216,15 @@ public class RentalController {
         User sender = userRepository.findById(entry.getSenderId())
                 .orElseThrow(() -> new RuntimeException("Receiver user not found"));
 
-        notificationService.sendNotification(
-                entry.getReceiverId(),
-                dto.getUserId(),
+        notificationService.sendNotification(entry.getReceiverId(), dto.getUserId(),
                 NotificationType.FINAL_SCHEDULE_CONFIRMED,
                 "You will meet with " + sender.getName() + " at: " + entry.getTimeInfo()
                         + "\nPlease confirm receiving ONLY when you recewivr the tool, to begin the rental.",
                 entry.getRentalId());
-        notificationService.deleteByTypeAndRental(NotificationType.SCHEDULE_PROPOSAL, dto.getRentalId());
+        notificationService.deleteByTypeAndRental(NotificationType.SCHEDULE_PROPOSAL,
+                dto.getRentalId());
+        notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE,
+                dto.getRentalId());
         return ResponseEntity.ok("Meeting confirmed and renter notified.");
     }
 }

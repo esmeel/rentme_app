@@ -1,5 +1,6 @@
 package com.rentme.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,6 +15,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "tools")
@@ -25,6 +28,48 @@ public class Tool {
     private String name;
     private String description;
     private double price;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "added_at")
+    private LocalDateTime addedAt;
+
+    public boolean isIsEdited() {
+        return this.isEdited;
+    }
+
+    public boolean getIsEdited() {
+        return this.isEdited;
+    }
+
+    public void setIsEdited(boolean isEdited) {
+        this.isEdited = isEdited;
+    }
+
+    public LocalDateTime getEditedAt() {
+        return this.editedAt;
+    }
+
+    public void setEditedAt(LocalDateTime editedAt) {
+        this.editedAt = editedAt;
+    }
+
+    @Column(name = "is_edited")
+    private boolean isEdited = false;
+
+    @Column(name = "edited_at")
+    private LocalDateTime editedAt;
+
+
+    public LocalDateTime getAddedAt() {
+        return this.addedAt;
+    }
+
+    public void setAddedAt(LocalDateTime addedAt) {
+        this.addedAt = addedAt;
+    }
+
+    public boolean isAvailable() {
+        return this.available;
+    }
 
     @Column(name = "available")
     private boolean available;
@@ -106,20 +151,13 @@ public class Tool {
 
     @Override
     public String toString() {
-        return "{" +
-                " id='" + getId() + "'" +
-                ", name='" + getName() + "'" +
-                ", description='" + getDescription() + "'" +
-                ", price='" + getPrice() + "'" +
-                ", imageUrl='" + getImageUrl() + "'" +
-                ", powerType='" + getPowerType() + "'" +
-                ", toolCondition='" + getToolCondition() + "'" +
-                ", accessories='" + getAccessories() + "'" +
-                ", accessoriesRequired='" + isAccessoriesRequired() + "'" +
-                ", riskLevel='" + getRiskLevel() + "'" +
-                ", ratingAvg='" + getRatingAvg() + "'" +
-                ", ratingCount='" + getRatingCount() + "'" +
-                ", owner='" + getOwner() + "'" +
+        return "{" + " id='" + getId() + "'" + ", name='" + getName() + "'" + ", description='"
+                + getDescription() + "'" + ", price='" + getPrice() + "'" + ", imageUrl='"
+                + getImageUrl() + "'" + ", powerType='" + getPowerType() + "'" + ", toolCondition='"
+                + getToolCondition() + "'" + ", accessories='" + getAccessories() + "'"
+                + ", accessoriesRequired='" + isAccessoriesRequired() + "'" + ", riskLevel='"
+                + getRiskLevel() + "'" + ", ratingAvg='" + getRatingAvg() + "'" + ", ratingCount='"
+                + getRatingCount() + "'" + ", owner='" + getOwner() + "'" +
                 // ", rentals='" + getRentals() + "'" +
                 // ", reviews='" + getToolReviews() + "'" +
                 "}";
