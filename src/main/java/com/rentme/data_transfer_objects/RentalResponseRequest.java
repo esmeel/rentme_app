@@ -5,6 +5,24 @@ public class RentalResponseRequest {
   private Long relatedId;
   private Long receiverId;
   private Long senderId;
+  private java.time.LocalDate ends;
+  private java.time.LocalDate starts;
+
+  public java.time.LocalDate getEnds() {
+    return this.ends;
+  }
+
+  public void setEnds(java.time.LocalDate ends) {
+    this.ends = ends;
+  }
+
+  public java.time.LocalDate getStarts() {
+    return this.starts;
+  }
+
+  public void setStarts(java.time.LocalDate starts) {
+    this.starts = starts;
+  }
 
   public Long getReceiverId() {
     return this.receiverId;
@@ -55,13 +73,9 @@ public class RentalResponseRequest {
 
   @Override
   public String toString() {
-    return "{" +
-        " rentalId='" + getRentalId() + "'" +
-        ", relatedId='" + getRelatedId() + "'" +
-        ", receiverId='" + getReceiverId() + "'" +
-        ", senderId='" + getSenderId() + "'" +
-        ", accept='" + isAccept() + "'" +
-        "}";
+    return "{" + " rentalId='" + getRentalId() + "'" + ", relatedId='" + getRelatedId() + "'"
+        + ", receiverId='" + getReceiverId() + "'" + ", senderId='" + getSenderId() + "'"
+        + ", accept='" + isAccept() + "'" + "}";
   }
 
 }

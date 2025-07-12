@@ -8,6 +8,25 @@ public class LocationOrTimeRequestDTO {
   private String toolPicUrl;
   private String meeting;
 
+  private java.time.LocalDate starts;
+  private java.time.LocalDate ends;
+
+  public java.time.LocalDate getStarts() {
+    return this.starts;
+  }
+
+  public void setStarts(java.time.LocalDate starts) {
+    this.starts = starts;
+  }
+
+  public java.time.LocalDate getEnds() {
+    return this.ends;
+  }
+
+  public void setEnds(java.time.LocalDate ends) {
+    this.ends = ends;
+  }
+
   public String getMeeting() {
     return this.meeting;
   }

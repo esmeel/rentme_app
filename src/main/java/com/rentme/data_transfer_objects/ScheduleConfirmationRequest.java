@@ -4,9 +4,26 @@ public class ScheduleConfirmationRequest {
   private Long scheduleId;
   private Long rentalId;
   private Long userId;
+  private java.time.LocalDate starts;
+  private java.time.LocalDate ends;
 
-  public ScheduleConfirmationRequest() {
+  public java.time.LocalDate getStarts() {
+    return this.starts;
   }
+
+  public void setStarts(java.time.LocalDate starts) {
+    this.starts = starts;
+  }
+
+  public java.time.LocalDate getEnds() {
+    return this.ends;
+  }
+
+  public void setEnds(java.time.LocalDate ends) {
+    this.ends = ends;
+  }
+
+  public ScheduleConfirmationRequest() {}
 
   public Long getScheduleId() {
     return scheduleId;

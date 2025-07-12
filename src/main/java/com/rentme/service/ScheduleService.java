@@ -22,8 +22,8 @@ public class ScheduleService {
   private final ScheduleEntryRepository scheduleEntryRepository;
   private final NotificationService notificationService;
 
-  public ScheduleService(UserRepository userRepository, ScheduleEntryRepository scheduleEntryRepository,
-      NotificationService notificationService) {
+  public ScheduleService(UserRepository userRepository,
+      ScheduleEntryRepository scheduleEntryRepository, NotificationService notificationService) {
     this.userRepository = userRepository;
     this.scheduleEntryRepository = scheduleEntryRepository;
     this.notificationService = notificationService;
@@ -55,8 +55,9 @@ public class ScheduleService {
 
     scheduleEntryRepository.saveAll(entriesToSave);
     // إرسال إشعار للمستأجر بأن المالك اقترح جداول مواعيد
-    notificationService.sendNotification(receiver.getId(), sender.getId(), NotificationType.SCHEDULE_PROPOSAL,
-        "You have received proposed schedule times.", request.getRentalId());
+    notificationService.sendNotification(receiver.getId(), sender.getId(),
+        NotificationType.SCHEDULE_PROPOSAL, "You have received proposed schedule times.",
+        request.getRentalId(), request.getStarts(), request.getEnds());
   }
 
   public List<ScheduleEntry> getByRentalId(Long rentalId) {
@@ -71,9 +72,8 @@ public class ScheduleService {
   }
 
   /**
-   * تابع تأكيد خيار الموعد الذي اختاره المستأجر.
-   * يتم تعيين الخيار المختار كـ confirmed، وقد نرغب أيضًا بإلغاء التأكيد عن
-   * الخيارات الأخرى.
+   * تابع تأكيد خيار الموعد الذي اختاره المستأجر. يتم تعيين الخيار المختار كـ confirmed، وقد نرغب
+   * أيضًا بإلغاء التأكيد عن الخيارات الأخرى.
    */
   public void addSelectedSchedule(Long scheduleId, Long rentalId, Long userId) {
     ScheduleEntry selected = scheduleEntryRepository.findById(scheduleId)
@@ -89,9 +89,8 @@ public class ScheduleService {
 
     // إلغاء التأكيد عن باقي الخيارات في نفس الإيجار (إذا رغبت في ذلك)
     List<ScheduleEntry> allEntries = scheduleEntryRepository.findByRentalId(rentalId);
-    List<ScheduleEntry> otherEntries = allEntries.stream()
-        .filter(e -> !e.getId().equals(scheduleId))
-        .collect(Collectors.toList());
+    List<ScheduleEntry> otherEntries =
+        allEntries.stream().filter(e -> !e.getId().equals(scheduleId)).collect(Collectors.toList());
     for (ScheduleEntry entry : otherEntries) {
       if (entry.isConfirmed()) {
         entry.setConfirmed(false);
@@ -99,12 +98,8 @@ public class ScheduleService {
     }
     scheduleEntryRepository.saveAll(otherEntries);
 
-    notificationService.sendNotification(
-        selected.getSenderId(),
-        userId,
-        NotificationType.OWNER_TIME_RESPONSE,
-        "The renter selected a schedule time.",
-        rentalId);
+    notificationService.sendNotification(selected.getSenderId(), userId,
+        NotificationType.OWNER_TIME_RESPONSE, "The renter selected a schedule time.", rentalId);
     notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE, rentalId);
   }
 }

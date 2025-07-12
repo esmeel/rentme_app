@@ -27,8 +27,32 @@ public class Notification {
   private String toolName;
   private String address;
   private String notes;
-  @Column(name = "meeting") // تطابق مع اسم العمود في قاعدة البيانات
+  @Column(name = "meeting")
   private String meeting;
+
+  @Column(name = "starts")
+  private java.time.LocalDate starts;
+
+  @Column(name = "ends")
+  private java.time.LocalDate ends;
+
+  public java.time.LocalDate getStarts() {
+    return this.starts;
+  }
+
+  public void setStarts(java.time.LocalDate starts) {
+    this.starts = starts;
+  }
+
+  public java.time.LocalDate getEnds() {
+    return this.ends;
+  }
+
+  public void setEnds(java.time.LocalDate ends) {
+    this.ends = ends;
+  }
+
+
 
   public String getMeeting() {
     return this.meeting;

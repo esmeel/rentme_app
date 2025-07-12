@@ -35,10 +35,8 @@ public class RentalService {
     @JoinColumn(name = "tool_id")
     private Tool tool;
 
-    public RentalService(RentalRepository rentalRepository,
-            ToolRepository toolRepository,
-            UserRepository userRepository,
-            NotificationService notificationService) {
+    public RentalService(RentalRepository rentalRepository, ToolRepository toolRepository,
+            UserRepository userRepository, NotificationService notificationService) {
         this.rentalRepository = rentalRepository;
         this.toolRepository = toolRepository;
         this.userRepository = userRepository;
@@ -47,17 +45,16 @@ public class RentalService {
 
     public List<Rental> getIncomingRequests(User owner) {
         System.out.println("🔍 Looking for rentals with owner ID: " + owner.getId());
-        List<Rental> results = rentalRepository.findRentalByOwnerAndStatus(owner, RentalStatus.PENDING);
+        List<Rental> results =
+                rentalRepository.findRentalByOwnerAndStatus(owner, RentalStatus.PENDING);
         System.out.println("🔍 Found " + results.size() + " pending requests.");
         return results;
 
     }
 
     // إنشاء طلب استئجار جديد
-    public Rental createRental(Long toolId, Long renterId,
-            java.time.LocalDate startDate,
-            java.time.LocalDate endDate,
-            NotificationRepository notificationRepository) {
+    public Rental createRental(Long toolId, Long renterId, java.time.LocalDate startDate,
+            java.time.LocalDate endDate, NotificationRepository notificationRepository) {
 
         this.tool = toolRepository.findById(toolId)
                 .orElseThrow(() -> new RuntimeException("Tool not found"));
@@ -86,20 +83,19 @@ public class RentalService {
         notification.setToolPicUrl(tool.getImageUrl());
         notification.setToolName(tool.getName());
         notification.setType(NotificationType.RENTAL_REQUEST);
-        notification.setMessage(renter.getName() + " want to rent your " + tool.getName());
+        notification.setMessage(renter.getName() + " want to rent your " + tool.getName() + " from "
+                + startDate + " to " + endDate);
         notification.setIsRead(false);
         notification.setCreatedAt(LocalDateTime.now());
+        notification.setStarts(startDate);
+        notification.setEnds(endDate);
 
-        // ⚠️ هنا يجب التأكد من:
-        notification.setRelatedId(rental.getId()); // ✅ مهم جداً
+        notification.setRelatedId(rental.getId());
 
         notificationRepository.save(notification);
         /*
-         * notificationService.sendNotification(
-         * owner.getId(),
-         * renter.getId(),
-         * NotificationType.RENTAL_REQUEST,
-         * "New rental request for your tool: " + tool.getName());
+         * notificationService.sendNotification( owner.getId(), renter.getId(),
+         * NotificationType.RENTAL_REQUEST, "New rental request for your tool: " + tool.getName());
          */
         return rental;
     }
@@ -121,16 +117,11 @@ public class RentalService {
             case COMPLETED -> message = "Your rental has been completed.";
             case CANCELLED -> message = "Your rental has been cancelled.";
             default -> message = "";
-        }
-        ;
+        };
 
         if (!message.isEmpty()) {
-            notificationService.sendNotification(
-                    rental.getRenter().getId(),
-                    rental.getOwner().getId(),
-                    NotificationType.RENTAL_APPROVED,
-                    message,
-                    rentalId);
+            notificationService.sendNotification(rental.getRenter().getId(),
+                    rental.getOwner().getId(), NotificationType.RENTAL_APPROVED, message, rentalId);
         }
 
         return rental;

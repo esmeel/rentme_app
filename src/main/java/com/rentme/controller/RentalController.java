@@ -187,6 +187,8 @@ public class RentalController {
                         + rental.getTool().getName());
         notification.setCreatedAt(LocalDateTime.now());
         notification.setIsRead(false);
+        notification.setStarts(request.getStarts());;
+        notification.setEnds(request.getEnds());;
         notificationRepository.save(notification);
         notificationRepository.deleteByTypeAndRelatedId(NotificationType.RENTAL_REQUEST,
                 rental.getId());
@@ -220,7 +222,7 @@ public class RentalController {
                 NotificationType.FINAL_SCHEDULE_CONFIRMED,
                 "You will meet with " + sender.getName() + " at: " + entry.getTimeInfo()
                         + "\nPlease confirm receiving ONLY when you recewivr the tool, to begin the rental.",
-                entry.getRentalId());
+                entry.getRentalId(), dto.getStarts(), dto.getEnds());
         notificationService.deleteByTypeAndRental(NotificationType.SCHEDULE_PROPOSAL,
                 dto.getRentalId());
         notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE,

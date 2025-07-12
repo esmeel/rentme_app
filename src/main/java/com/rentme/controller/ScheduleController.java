@@ -95,6 +95,8 @@ public class ScheduleController {
       notif.setRelatedId(selected.getRentalId());
       notif.setCreatedAt(LocalDateTime.now());
       notif.setIsRead(false);
+      notif.setStarts(request.getStarts());
+      notif.setEnds(request.getEnds());
 
       notif.setSenderName(sender.getName());
       notificationService.sendNotification(notif);

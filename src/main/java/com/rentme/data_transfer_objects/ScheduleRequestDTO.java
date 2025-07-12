@@ -8,10 +8,29 @@ public class ScheduleRequestDTO {
   private Long rentalId;
   private Long relatedId;
   private String notes;
+
+  private java.time.LocalDate starts;
+  private java.time.LocalDate ends;
+
+  public java.time.LocalDate getStarts() {
+    return this.starts;
+  }
+
+  public void setStarts(java.time.LocalDate starts) {
+    this.starts = starts;
+  }
+
+  public java.time.LocalDate getEnds() {
+    return this.ends;
+  }
+
+  public void setEnds(java.time.LocalDate ends) {
+    this.ends = ends;
+  }
+
   private List<ScheduleEntryDTO> entries;
 
-  public ScheduleRequestDTO() {
-  }
+  public ScheduleRequestDTO() {}
 
   public Long getRelatedId() {
     return this.relatedId;

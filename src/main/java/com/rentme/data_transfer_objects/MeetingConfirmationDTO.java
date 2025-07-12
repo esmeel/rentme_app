@@ -6,6 +6,24 @@ public class MeetingConfirmationDTO {
   private Long rentalId;
   private Long userId;
   private NotificationType notiType;
+  private java.time.LocalDate starts;
+  private java.time.LocalDate ends;
+
+  public java.time.LocalDate getStarts() {
+    return this.starts;
+  }
+
+  public void setStarts(java.time.LocalDate starts) {
+    this.starts = starts;
+  }
+
+  public java.time.LocalDate getEnds() {
+    return this.ends;
+  }
+
+  public void setEnds(java.time.LocalDate ends) {
+    this.ends = ends;
+  }
 
   public NotificationType getNotiType() {
     return this.notiType;
@@ -17,8 +35,7 @@ public class MeetingConfirmationDTO {
 
   // getters and setters
 
-  public MeetingConfirmationDTO() {
-  }
+  public MeetingConfirmationDTO() {}
 
   public MeetingConfirmationDTO(Long rentalId, Long userId) {
     this.rentalId = rentalId;
@@ -53,9 +70,7 @@ public class MeetingConfirmationDTO {
 
   @Override
   public String toString() {
-    return "{" +
-        " scheduleEntryId='" + getRentalId() + "'" +
-        ", userId='" + getUserId() + "'" +
-        "}";
+    return "{" + " scheduleEntryId='" + getRentalId() + "'" + ", userId='" + getUserId() + "'"
+        + "}";
   }
 }
