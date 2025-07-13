@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,8 +18,20 @@ public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long receiverId;
-    private Long senderId;
+    private Long ownerId;
+    private Long renterId;
+    @Enumerated(EnumType.STRING)
+    private RentalStatus status;
+
+    private LocalDateTime activatedAt;
+
+    public LocalDateTime getActivatedAt() {
+        return this.activatedAt;
+    }
+
+    public void setActivatedAt(LocalDateTime activatedAt) {
+        this.activatedAt = activatedAt;
+    }
 
     @ManyToOne
     @JoinColumn(name = "tool_id")
@@ -25,16 +39,10 @@ public class Rental {
 
     private String toolPic;
 
-    @ManyToOne
-    private User renter;
-
-    @ManyToOne
-    private User owner;
 
     private LocalDate startDate;
     private LocalDate endDate;
 
-    private RentalStatus status;
 
     private String macAddress;
 
@@ -42,20 +50,20 @@ public class Rental {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public Long getReceiverId() {
-        return this.receiverId;
+    public Long getOwnerId() {
+        return this.ownerId;
     }
 
-    public void setReceiverId(Long receiverId) {
-        this.receiverId = receiverId;
+    public void setOwnerId(Long receiverId) {
+        this.ownerId = receiverId;
     }
 
-    public Long getSenderId() {
-        return this.senderId;
+    public Long getRenterId() {
+        return this.renterId;
     }
 
-    public void setSenderId(Long senderId) {
-        this.senderId = senderId;
+    public void setRenterId(Long senderId) {
+        this.renterId = senderId;
     }
 
     public String getToolPic() {
@@ -96,21 +104,6 @@ public class Rental {
         this.tool = tool;
     }
 
-    public User getRenter() {
-        return this.renter;
-    }
-
-    public void setRenter(User renter) {
-        this.renter = renter;
-    }
-
-    public User getOwner() {
-        return this.owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
 
     public LocalDate getStartDate() {
         return this.startDate;
@@ -154,20 +147,12 @@ public class Rental {
 
     @Override
     public String toString() {
-        return "{" +
-                " id='" + getId() + "'" +
-                ", receiverId='" + getReceiverId() + "'" +
-                ", senderId='" + getSenderId() + "'" +
-                ", tool='" + getTool() + "'" +
-                ", toolPic='" + getToolPic() + "'" +
-                ", renter='" + getRenter() + "'" +
-                ", owner='" + getOwner() + "'" +
-                ", startDate='" + getStartDate() + "'" +
-                ", endDate='" + getEndDate() + "'" +
-                ", status='" + getStatus() + "'" +
-                ", macAddress='" + getMacAddress() + "'" +
-                ", accepted='" + isAccepted() + "'" +
-                ", createdAt='" + getCreatedAt() + "'" +
-                "}";
+        return "{" + " id='" + getId() + "'" + ", owner_id='" + getOwnerId() + "'" + ", senderId='"
+                + getRenterId() + "'" + ", status='" + getStatus() + "'" + ", activatedAt='"
+                + getActivatedAt() + "'" + ", tool='" + getTool() + "'" + ", toolPic='"
+                + getToolPic() + "'" + ", startDate='" + getStartDate() + "'" + ", endDate='"
+                + getEndDate() + "'" + ", macAddress='" + getMacAddress() + "'" + ", accepted='"
+                + isAccepted() + "'" + ", createdAt='" + getCreatedAt() + "'" + "}";
     }
+
 }

@@ -2,7 +2,6 @@ package com.rentme.data_transfer_objects;
 
 import com.rentme.model.Rental;
 import com.rentme.model.RentalStatus;
-import com.rentme.service.RentalService;
 
 public class RentalResponseDTO {
   private Long id;
@@ -19,8 +18,8 @@ public class RentalResponseDTO {
     this.endDate = rental.getEndDate().toString();
     this.status = rental.getStatus();
     this.toolId = rental.getTool().getId();
-    this.ownerId = rental.getOwner().getId();
-    this.renterId = rental.getRenter().getId();
+    this.ownerId = rental.getOwnerId();
+    this.renterId = rental.getRenterId();
   }
 
   // Getters and setters
@@ -83,14 +82,8 @@ public class RentalResponseDTO {
 
   @Override
   public String toString() {
-    return "{" +
-        "id=" + id +
-        ", startDate='" + startDate + '\'' +
-        ", endDate='" + endDate + '\'' +
-        ", status='" + status + '\'' +
-        ", toolId=" + toolId +
-        ", ownerId=" + ownerId +
-        ", renterId=" + renterId +
-        '}';
+    return "{" + "id=" + id + ", startDate='" + startDate + '\'' + ", endDate='" + endDate + '\''
+        + ", status='" + status + '\'' + ", toolId=" + toolId + ", ownerId=" + ownerId
+        + ", renterId=" + renterId + '}';
   }
 }

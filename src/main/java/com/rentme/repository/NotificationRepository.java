@@ -1,6 +1,7 @@
 package com.rentme.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,6 +14,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
   void deleteByTypeAndRelatedId(NotificationType type, Long relatedId);
 
   List<Notification> findByReceiverId(Long receiverId);
+
+  Optional<Notification> findFirstByTypeAndRelatedIdOrderByCreatedAtDesc(NotificationType type,
+      Long relatedId);
 
   List<Notification> findByTypeAndRelatedId(NotificationType type, Long relatedId);
 

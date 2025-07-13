@@ -13,7 +13,6 @@ src/main/java/com/Globals/IpLocal.java
 .settings
 .springBeans
 .sts4-cache
-src/main/java/com/Globals/IpLocal.java
 ### IntelliJ IDEA ###
 .idea
 *.iws

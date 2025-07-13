@@ -50,7 +50,7 @@ public class LocationController {
     notif.setReceiverId(dto.getReceiverId());
     notif.setMessage(message);
     notif.setType(NotificationType.LOCATION_SENT);
-    notif.setRelatedId(null);
+    notif.setRelatedId(dto.getRentalId());
     notif.setCreatedAt(LocalDateTime.now());
     notif.setIsRead(false);
     notif.setLatitude(dto.getLatitude());
