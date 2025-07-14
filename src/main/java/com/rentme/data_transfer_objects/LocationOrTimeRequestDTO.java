@@ -5,6 +5,16 @@ public class LocationOrTimeRequestDTO {
   private Long senderId;
   private Long receiverId;
   private String senderNamne;
+  private String receiverName;
+
+  public String getReceiverName() {
+    return this.receiverName;
+  }
+
+  public void setReceiverName(String receiverName) {
+    this.receiverName = receiverName;
+  }
+
   private String toolPicUrl;
   private String meeting;
 

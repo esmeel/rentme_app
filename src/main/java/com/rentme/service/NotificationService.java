@@ -135,6 +135,8 @@ public class NotificationService {
     notif.setToolPicUrl(dto.getToolPicUrl());
     notif.setStarts(dto.getStarts());
     notif.setEnds(dto.getEnds());
+    notif.setSenderName(dto.getSenderNamne());
+    notif.setReceiverName(dto.getReceiverName());
     notificationRepo.save(notif);
   }
 
