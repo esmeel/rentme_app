@@ -162,7 +162,7 @@ public class RentalController {
                 : NotificationType.RENTAL_REJECTED);
         notification.setRelatedId(rental.getId());
         notification.setMessage(request.isAccept()
-                ? renter.getName() + " accepted to rent you " + rental.getTool().getName()
+                ? owner.getName() + " accepted to rent you " + rental.getTool().getName()
                 : owner.getName() + " rejected to rent you " + rental.getTool().getName());
         notification.setCreatedAt(LocalDateTime.now());
         notification.setIsRead(false);
