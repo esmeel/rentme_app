@@ -168,6 +168,10 @@ public class RentalController {
         notification.setIsRead(false);
         notification.setStarts(request.getStarts());;
         notification.setEnds(request.getEnds());;
+        notification.setToolName(rental.getTool().getName());
+        notification.setToolPicUrl(rental.getTool().getImageUrl());
+
+
         notificationRepository.save(notification);
         notificationRepository.deleteByTypeAndRelatedId(NotificationType.RENTAL_REQUEST,
                 rental.getId());
