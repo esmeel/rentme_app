@@ -45,7 +45,7 @@ public class SecurityConfig {
                                                 "/api/users/unsave-tool/**", "/api/user-reviews/**",
                                                 "/api/fcm-token/", "/ws/chat/**", "/ws/**",
                                                 "/api/chat-rooms/**", "/api/rentals/**",
-                                                "/api/rentals/respond", "/api/rentals/incoming",
+                                                // "/api/rentals/respond", "/api/rentals/incoming",
                                                 "/api/notification", "/api/notification/**",
                                                 "/api/users/google-login",
                                                 "/api/users/facebook-login",

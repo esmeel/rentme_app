@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rentme.data_transfer_objects.ConfirmReceivedDTO;
 import com.rentme.data_transfer_objects.MeetingConfirmationDTO;
 import com.rentme.data_transfer_objects.RentalRequest;
 import com.rentme.data_transfer_objects.RentalResponseDTO;
 import com.rentme.data_transfer_objects.RentalResponseRequest;
-import com.rentme.model.ChatRoom;
 import com.rentme.model.Notification;
 import com.rentme.model.NotificationType;
 import com.rentme.model.Rental;
@@ -142,49 +142,24 @@ public class RentalController {
             if (rental.getTool() != null) {
                 rental.getTool().setAvailable(false);
             }
-
-            boolean chatRoomExists = chatRoomRepository.findByRentalId(rental.getId()).isPresent();
-            if (!chatRoomExists) {
-                ChatRoom room = new ChatRoom();
-                room.setOwner(rental.getOwner());
-                room.setRenter(rental.getRenter());
-                room.setRental(rental);
-                room.setCreatedAt(LocalDateTime.now());
-                chatRoomRepository.save(room);
-            }
-        } else {
-            rental.getTool().setAvailable(true);
-            chatRoomRepository.findByRentalId(rental.getId()).ifPresent(chatRoomRepository::delete);
-
-            List<ScheduleEntry> entries = scheduleEntryRepository.findByRentalId(rental.getId());
-            scheduleEntryRepository.deleteAll(entries);
-
-            rentalRepository.deleteById(rental.getId());
         }
 
-        Long chatRoomId = null;
-        if (request.isAccept()) {
-            Optional<ChatRoom> chatRoomOpt = chatRoomRepository.findByRentalId(rental.getId());
-            if (chatRoomOpt.isPresent()) {
-                chatRoomId = chatRoomOpt.get().getId();
-            }
-        }
+
+        User renter = userRepository.getUserById(rental.getRenterId());
+        User owner = userRepository.getUserById(rental.getOwnerId());
 
         Notification notification = new Notification();
-
         notification.setSenderId(request.getSenderId());
         notification.setReceiverId(request.getReceiverId());
         notification.setToolPicUrl(rental.getToolPic());
-        notification.setSenderName(rental.getOwner().getName());
-        notification.setReceiverName(rental.getRenter().getName());
+        notification.setSenderName(owner.getName());
+        notification.setReceiverName(renter.getName());
         notification.setType(request.isAccept() ? NotificationType.RENTAL_APPROVED
                 : NotificationType.RENTAL_REJECTED);
         notification.setRelatedId(rental.getId());
         notification.setMessage(request.isAccept()
-                ? rental.getOwner().getName() + " accepted to rent you "
-                        + rental.getTool().getName()
-                : rental.getOwner().getName() + " rejected to rent you "
-                        + rental.getTool().getName());
+                ? renter.getName() + " accepted to rent you " + rental.getTool().getName()
+                : owner.getName() + " rejected to rent you " + rental.getTool().getName());
         notification.setCreatedAt(LocalDateTime.now());
         notification.setIsRead(false);
         notification.setStarts(request.getStarts());;
@@ -194,6 +169,7 @@ public class RentalController {
                 rental.getId());
 
         return ResponseEntity.ok("Response recorded and notification sent.");
+
     }
 
     @PostMapping("/confirm-meeting")
@@ -229,4 +205,37 @@ public class RentalController {
                 dto.getRentalId());
         return ResponseEntity.ok("Meeting confirmed and renter notified.");
     }
+
+    @PostMapping("/confirm-received")
+    public ResponseEntity<String> confirmToolReceived(@RequestBody ConfirmReceivedDTO request) {
+        Optional<Rental> rentalOpt = rentalRepository.findById(request.getRentalId());
+        if (rentalOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Rental not found.");
+        }
+
+        Rental rental = rentalOpt.get();
+        System.out.println("----------------------confiem received----");
+        System.out.println("renter id=" + rental.getRenterId());
+        System.out.println("request renter (user) id=" + request.getUserId());
+        // تحقق أن المستخدم الذي يؤكّد هو نفسه المستأجر
+        if (!rental.getRenterId().equals(request.getUserId())) {
+            return ResponseEntity.status(403)
+                    .body("You are not authorized to confirm this rental.");
+        }
+
+        rental.setStatus(RentalStatus.ACTIVE);
+        rentalRepository.save(rental);
+
+        // إرسال إشعار للمالك
+        User renter = userRepository.findById(rental.getRenterId()).orElse(null);
+        if (renter != null) {
+            notificationService.sendNotification(rental.getOwnerId(), renter.getId(),
+                    NotificationType.CONFIRMED_TOOL_RECEIVED, "Tool has been received by renter.",
+                    rental.getId());
+        }
+
+        return ResponseEntity.ok("Rental confirmed and notification sent.");
+    }
+
 }
+

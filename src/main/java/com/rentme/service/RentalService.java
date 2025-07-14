@@ -46,7 +46,7 @@ public class RentalService {
     public List<Rental> getIncomingRequests(User owner) {
         System.out.println("🔍 Looking for rentals with owner ID: " + owner.getId());
         List<Rental> results =
-                rentalRepository.findRentalByOwnerAndStatus(owner, RentalStatus.PENDING);
+                rentalRepository.findRentalByOwnerIdAndStatus(owner.getId(), RentalStatus.PENDING);
         System.out.println("🔍 Found " + results.size() + " pending requests.");
         return results;
 
@@ -67,8 +67,8 @@ public class RentalService {
         Rental rental = new Rental();
         rental.setTool(tool);
         rental.setToolPic(tool.getImageUrl());
-        rental.setRenter(renter);
-        rental.setOwner(owner);
+        rental.setRenterId(renter.getId());
+        rental.setOwnerId(owner.getId());
         rental.setStartDate(startDate);
         rental.setEndDate(endDate);
         rental.setStatus(RentalStatus.PENDING);
@@ -120,8 +120,8 @@ public class RentalService {
         };
 
         if (!message.isEmpty()) {
-            notificationService.sendNotification(rental.getRenter().getId(),
-                    rental.getOwner().getId(), NotificationType.RENTAL_APPROVED, message, rentalId);
+            notificationService.sendNotification(rental.getRenterId(), rental.getOwnerId(),
+                    NotificationType.RENTAL_APPROVED, message, rentalId);
         }
 
         return rental;
