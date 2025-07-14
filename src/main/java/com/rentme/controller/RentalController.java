@@ -142,6 +142,10 @@ public class RentalController {
             if (rental.getTool() != null) {
                 rental.getTool().setAvailable(false);
             }
+        } else {
+
+            rental.getTool().setAvailable(true);
+            rentalRepository.deleteById(rental.getId());
         }
 
 
