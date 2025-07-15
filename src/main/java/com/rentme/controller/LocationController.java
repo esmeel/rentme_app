@@ -57,10 +57,13 @@ public class LocationController {
     notif.setLongitude(dto.getLongitude());
     notif.setAddress(dto.getAddress());
     notif.setSenderName(sender.getName());
+    notif.setReceiverName(receiver.getName());
+    notif.setToolPicUrl(message);
     notif.setNotes(dto.getNotes());
     notif.setMeeting(dto.getMeeting());
     notif.setStarts(dto.getStarts());
     notif.setEnds(dto.getEnds());
+    notif.setToolPicUrl(dto.getToolPic());
     notificationRepository.save(notif);
     System.out.println("will delete notification with rental id = " + dto.getRentalId());
     notificationRepository.deleteByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST,

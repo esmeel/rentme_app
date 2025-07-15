@@ -76,8 +76,12 @@ public class ScheduleController {
 
       scheduleService.addSelectedSchedule(request.getScheduleId(), request.getRentalId(),
           request.getUserId());
+      Rental rental = rentalRepository.findById(request.getRentalId())
+          .orElseThrow(() -> new RuntimeException("Rental not found"));
+
       User sender = userRepository.getUserById(request.getUserId());
-      // get selected schedule:
+      User owner = userRepository.getUserById(request.getUserId());
+
       ScheduleEntry selected = scheduleEntryRepository.findById(request.getScheduleId())
           .orElseThrow(() -> new RuntimeException("Schedule entry not found"));
 
@@ -97,8 +101,9 @@ public class ScheduleController {
       notif.setIsRead(false);
       notif.setStarts(request.getStarts());
       notif.setEnds(request.getEnds());
-
+      notif.setToolPicUrl(rental.getTool().getImageUrl());
       notif.setSenderName(sender.getName());
+      notif.setReceiverName(owner.getName());
       notificationService.sendNotification(notif);
 
 

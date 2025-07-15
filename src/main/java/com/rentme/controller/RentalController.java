@@ -238,7 +238,7 @@ public class RentalController {
         User renter = userRepository.findById(rental.getRenterId()).orElse(null);
         if (renter != null) {
             notificationService.sendNotification(rental.getOwnerId(), renter.getId(),
-                    NotificationType.CONFIRMED_TOOL_RECEIVED, "Tool has been received by renter.",
+                    NotificationType.CONFIRMED_TOOL_RECEIVED, "I have received your tool.",
                     rental.getId());
         }
 

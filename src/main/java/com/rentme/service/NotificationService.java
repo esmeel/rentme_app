@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import com.rentme.data_transfer_objects.LocationOrTimeRequestDTO;
 import com.rentme.model.Notification;
 import com.rentme.model.NotificationType;
+import com.rentme.model.Rental;
 import com.rentme.model.User;
 import com.rentme.repository.NotificationRepository;
+import com.rentme.repository.RentalRepository;
 import com.rentme.repository.UserRepository;
 
 @Service
@@ -20,21 +22,27 @@ public class NotificationService {
   private NotificationRepository notificationRepo;
   private final NotificationRepository notificationRepository;
   private final UserRepository userRepository;
+  private final RentalRepository rentalRepository;
 
   public NotificationService(NotificationRepository notificationRepository,
-      UserRepository userRepository) {
+      UserRepository userRepository, RentalRepository rentalRepository) {
     this.notificationRepository = notificationRepository;
     this.userRepository = userRepository;
+    this.rentalRepository = rentalRepository;
   }
 
   // private java.time.LocalDate starts;
   // private java.time.LocalDate ends;
   public void sendNotification(Long receiverId, Long senderId, NotificationType type,
       String message, Long rentalId, java.time.LocalDate starts, java.time.LocalDate ends) {
+
     User receiver = userRepository.findById(receiverId)
         .orElseThrow(() -> new RuntimeException("Receiver user not found"));
 
     User sender = userRepository.findById(senderId).orElse(null);
+
+    Rental rental = rentalRepository.findById(rentalId)
+        .orElseThrow(() -> new RuntimeException("Rental not found"));
 
     Notification notification = new Notification();
     notification.setReceiverId(receiver.getId());
@@ -48,6 +56,7 @@ public class NotificationService {
     notification.setCreatedAt(LocalDateTime.now());
     notification.setStarts(starts);
     notification.setEnds(ends);
+    notification.setToolPicUrl(rental.getToolPic());
     if (type == NotificationType.FINAL_SCHEDULE_CONFIRMED)
       notification.setMeeting(message);
 
@@ -61,10 +70,20 @@ public class NotificationService {
 
   public void sendNotification(Long receiverId, Long senderId, NotificationType type,
       String message, Long rentalId) {
+
+    if (receiverId == null || senderId == null || type == null || message == null
+        || rentalId == null) {
+      throw new IllegalArgumentException("All parameters must be provided");
+    }
+
     User receiver = userRepository.findById(receiverId)
         .orElseThrow(() -> new RuntimeException("Receiver user not found"));
 
     User sender = userRepository.findById(senderId).orElse(null);
+
+    Rental rental = rentalRepository.findById(rentalId)
+        .orElseThrow(() -> new RuntimeException("Rental not found"));
+
 
     Notification notification = new Notification();
     notification.setReceiverId(receiver.getId());
@@ -76,6 +95,8 @@ public class NotificationService {
     notification.setSenderName(sender.getName());
     notification.setReceiverName(receiver.getName());
     notification.setCreatedAt(LocalDateTime.now());
+    notification.setToolPicUrl(rental.getToolPic());
+    notification.setToolName(rental.getTool().getName());
 
     if (type == NotificationType.FINAL_SCHEDULE_CONFIRMED)
       notification.setMeeting(message);
@@ -109,6 +130,8 @@ public class NotificationService {
     Notification notif = new Notification();
     notif.setSenderId(dto.getSenderId());
     notif.setReceiverId(dto.getReceiverId());
+    notif.setSenderName(dto.getSenderNamne());
+    notif.setReceiverName(dto.getReceiverName());
     notif.setRelatedId(dto.getRentalId());
     notif.setType(NotificationType.OWNER_LOCATION_REQUEST);
     notif.setMessage(dto.getSenderNamne() + " is requesting the pickup location");

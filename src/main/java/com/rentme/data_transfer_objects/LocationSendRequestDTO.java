@@ -9,6 +9,16 @@ public class LocationSendRequestDTO {
 
   private double longitude;
 
+  private String toolPic;;
+
+  public String getToolPic() {
+    return this.toolPic;
+  }
+
+  public void setToolPic(String toolPic) {
+    this.toolPic = toolPic;
+  }
+
   private String address;
   private String notes;
   private String meeting;
