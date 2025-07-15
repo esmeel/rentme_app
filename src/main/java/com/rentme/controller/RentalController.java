@@ -164,7 +164,8 @@ public class RentalController {
         notification.setRelatedId(rental.getId());
         notification.setMessage(request.isAccept()
                 ? owner.getName() + " accepted to rent you " + rental.getTool().getName()
-                : owner.getName() + " rejected to rent you " + rental.getTool().getName());
+                : owner.getName() + " rejected / canceled to rent you "
+                        + rental.getTool().getName());
         notification.setCreatedAt(LocalDateTime.now());
         notification.setIsRead(false);
         notification.setStarts(request.getStarts());;
