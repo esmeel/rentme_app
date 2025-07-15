@@ -11,14 +11,26 @@ import com.rentme.model.ScheduleEntry;
 import jakarta.transaction.Transactional;
 
 public interface ScheduleEntryRepository extends JpaRepository<ScheduleEntry, Long> {
+
   List<ScheduleEntry> findByReceiverId(Long receiverId);
 
   List<ScheduleEntry> findByRentalId(Long rentalId);
+
+
+
+  @Modifying
+  @Transactional
+  void deleteByRentalId(long rentalId);
+
+
 
   @Modifying
   @Transactional
   // @Query("DELETE FROM ScheduleEntry e WHERE e.rentalid = :rentalId AND e.id <>
   // :confirmedId")
-  void deleteByRentalIdAndIdNot(@Param("rentalId") Long rentalId, @Param("confirmedId") Long confirmedId);
+  void deleteByRentalIdAndIdNot(@Param("rentalId") Long rentalId,
+      @Param("confirmedId") Long confirmedId);
+
+
 
 }

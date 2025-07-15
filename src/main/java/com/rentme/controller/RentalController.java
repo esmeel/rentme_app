@@ -145,6 +145,7 @@ public class RentalController {
         } else {
 
             rental.getTool().setAvailable(true);
+            scheduleEntryRepository.deleteByRentalId(rental.getId());
             rentalRepository.deleteById(rental.getId());
         }
 
