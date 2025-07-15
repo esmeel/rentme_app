@@ -64,6 +64,7 @@ public class LocationController {
     notif.setStarts(dto.getStarts());
     notif.setEnds(dto.getEnds());
     notif.setToolPicUrl(dto.getToolPic());
+    notif.setToolName(dto.getToolName());
     notificationRepository.save(notif);
     System.out.println("will delete notification with rental id = " + dto.getRentalId());
     notificationRepository.deleteByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST,

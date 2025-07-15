@@ -10,6 +10,15 @@ public class LocationSendRequestDTO {
   private double longitude;
 
   private String toolPic;;
+  private String toolName;;
+
+  public String getToolName() {
+    return this.toolName;
+  }
+
+  public void setToolName(String toolName) {
+    this.toolName = toolName;
+  }
 
   public String getToolPic() {
     return this.toolPic;

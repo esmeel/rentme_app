@@ -104,6 +104,7 @@ public class ScheduleController {
       notif.setToolPicUrl(rental.getTool().getImageUrl());
       notif.setSenderName(sender.getName());
       notif.setReceiverName(owner.getName());
+      notif.setToolName(rental.getTool().getName());
       notificationService.sendNotification(notif);
 
 
