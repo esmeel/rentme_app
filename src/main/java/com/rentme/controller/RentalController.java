@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,6 +36,7 @@ import com.rentme.repository.UserRepository;
 import com.rentme.security.JwtUtil;
 import com.rentme.service.NotificationService;
 import com.rentme.service.RentalService;
+import com.rentme.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -50,12 +52,13 @@ public class RentalController {
     public final ChatRoomRepository chatRoomRepository;
     public final ScheduleEntryRepository scheduleEntryRepository;
     public final NotificationService notificationService;
+    public final UserService userService;
 
     public RentalController(RentalService rentalService, JwtUtil jwtUtil,
             UserRepository userRepository, RentalRepository rentalRepository,
             NotificationRepository notificationRepository, ChatRoomRepository chatRoomRepository,
             ScheduleEntryRepository scheduleEntryRepository,
-            NotificationService notificationService) {
+            NotificationService notificationService, UserService userService) {
         this.rentalService = rentalService;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
@@ -64,6 +67,7 @@ public class RentalController {
         this.chatRoomRepository = chatRoomRepository;
         this.scheduleEntryRepository = scheduleEntryRepository;
         this.notificationService = notificationService;
+        this.userService = userService;
     }
 
     @GetMapping("/exists")
@@ -105,6 +109,28 @@ public class RentalController {
 
         List<Rental> requests = rentalRepository.findByOwnerId(owner.getId());
         return ResponseEntity.ok(requests);
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<RentalResponseDTO>> getMyRentals(
+            @RequestHeader("Authorization") String token) {
+
+        User currentUser = userService.getUserFromToken(token);
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        List<Rental> rentals =
+                rentalRepository.findByOwnerIdOrRenterId(currentUser.getId(), currentUser.getId());
+
+        List<RentalResponseDTO> response = rentals.stream().map(RentalResponseDTO::new) // يجب أن
+                                                                                        // يكون
+                                                                                        // موجودًا
+                                                                                        // هذا
+                                                                                        // الكونستركتور
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/incoming")

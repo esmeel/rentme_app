@@ -9,6 +9,9 @@ import com.rentme.model.Rental;
 import com.rentme.model.RentalStatus;
 
 public interface RentalRepository extends JpaRepository<Rental, Long> {
+
+    List<Rental> findByOwnerIdOrRenterId(Long ownerId, Long renterId);
+
     List<Rental> findByRenterId(Long renterId);
 
     List<Rental> findByToolId(Long toolId);
