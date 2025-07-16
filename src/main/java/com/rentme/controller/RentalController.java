@@ -126,8 +126,12 @@ public class RentalController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
+
         List<RentalResponseDTO> response =
                 rentals.stream().map(RentalResponseDTO::new).collect(Collectors.toList());
+        if (response.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
 
         return ResponseEntity.ok(response);
     }
