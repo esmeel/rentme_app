@@ -67,8 +67,13 @@ public class RentalService {
         Rental rental = new Rental();
         rental.setTool(tool);
         rental.setToolPic(tool.getImageUrl());
+        rental.setToolName(tool.getName());
+
         rental.setRenterId(renter.getId());
         rental.setOwnerId(owner.getId());
+        rental.setRenterName(renter.getName());
+        rental.setOwnerName(owner.getName());
+
         rental.setStartDate(startDate);
         rental.setEndDate(endDate);
         rental.setStatus(RentalStatus.PENDING);

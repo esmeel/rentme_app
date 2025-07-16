@@ -84,7 +84,6 @@ public class RentalController {
         }
         Rental rental = rentalService.createRental(request.getToolId(), request.getRenterId(),
                 request.getStartDate(), request.getEndDate(), notificationRepository);
-        System.out.println(rental.toString());
         return ResponseEntity.ok(rental);
     }
 
@@ -120,7 +119,6 @@ public class RentalController {
         List<Rental> rentals = rentalService.getIncomingRequests(owner);
         List<RentalResponseDTO> dtos =
                 rentals.stream().map(RentalResponseDTO::new).collect(Collectors.toList());
-        System.out.println("To be sent:==> " + dtos);
         return ResponseEntity.ok(dtos);
     }
 
@@ -224,9 +222,7 @@ public class RentalController {
         }
 
         Rental rental = rentalOpt.get();
-        System.out.println("----------------------confiem received----");
-        System.out.println("renter id=" + rental.getRenterId());
-        System.out.println("request renter (user) id=" + request.getUserId());
+
         // تحقق أن المستخدم الذي يؤكّد هو نفسه المستأجر
         if (!rental.getRenterId().equals(request.getUserId())) {
             return ResponseEntity.status(403)
