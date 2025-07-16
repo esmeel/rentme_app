@@ -123,12 +123,8 @@ public class RentalController {
         List<Rental> rentals =
                 rentalRepository.findByOwnerIdOrRenterId(currentUser.getId(), currentUser.getId());
 
-        List<RentalResponseDTO> response = rentals.stream().map(RentalResponseDTO::new) // يجب أن
-                                                                                        // يكون
-                                                                                        // موجودًا
-                                                                                        // هذا
-                                                                                        // الكونستركتور
-                .collect(Collectors.toList());
+        List<RentalResponseDTO> response =
+                rentals.stream().map(RentalResponseDTO::new).collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
     }
