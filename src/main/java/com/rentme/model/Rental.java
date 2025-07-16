@@ -25,6 +25,50 @@ public class Rental {
 
     private LocalDateTime activatedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "tool_id")
+    private Tool tool;
+
+    private String toolPic;
+
+    private String toolName;
+
+    private String ownerName;
+
+
+    private String renterName;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private String macAddress;
+    private boolean accepted;
+
+    public String getToolName() {
+        return this.toolName;
+    }
+
+    public void setToolName(String toolName) {
+        this.toolName = toolName;
+    }
+
+    public String getOwnerName() {
+        return this.ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public String getRenterName() {
+        return this.renterName;
+    }
+
+    public void setRenterName(String renterName) {
+        this.renterName = renterName;
+    }
+
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     public LocalDateTime getActivatedAt() {
         return this.activatedAt;
     }
@@ -33,22 +77,7 @@ public class Rental {
         this.activatedAt = activatedAt;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "tool_id")
-    private Tool tool;
 
-    private String toolPic;
-
-
-    private LocalDate startDate;
-    private LocalDate endDate;
-
-
-    private String macAddress;
-
-    private boolean accepted;
-
-    private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getOwnerId() {
         return this.ownerId;
