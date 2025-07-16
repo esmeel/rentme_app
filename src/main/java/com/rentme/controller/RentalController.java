@@ -122,6 +122,9 @@ public class RentalController {
 
         List<Rental> rentals =
                 rentalRepository.findByOwnerIdOrRenterId(currentUser.getId(), currentUser.getId());
+        if (rentals.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
 
         List<RentalResponseDTO> response =
                 rentals.stream().map(RentalResponseDTO::new).collect(Collectors.toList());
