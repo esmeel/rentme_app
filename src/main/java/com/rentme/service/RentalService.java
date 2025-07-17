@@ -3,6 +3,7 @@ package com.rentme.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -103,6 +104,23 @@ public class RentalService {
          * NotificationType.RENTAL_REQUEST, "New rental request for your tool: " + tool.getName());
          */
         return rental;
+    }
+
+    public boolean requestReturn(Long rentalId, Long userId) {
+        Optional<Rental> rentalOpt = rentalRepository.findById(rentalId);
+
+        if (rentalOpt.isEmpty())
+            return false;
+
+        Rental rental = rentalOpt.get();
+
+        // فقط المالك هو من يطلب إرجاع الأداة
+        if (!rental.getRenterId().equals(userId))
+            return false;
+
+        rental.setRequestingReturn(true);
+        rentalRepository.save(rental);
+        return true;
     }
 
     // تحديث حالة طلب الاستئجار

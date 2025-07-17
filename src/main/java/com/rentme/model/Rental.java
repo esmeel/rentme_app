@@ -3,6 +3,7 @@ package com.rentme.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -77,6 +78,20 @@ public class Rental {
         this.activatedAt = activatedAt;
     }
 
+    @Column(name = "requesting_return")
+    private boolean requestingReturn = false;
+
+    public boolean isRequestingReturn() {
+        return this.requestingReturn;
+    }
+
+    public boolean getRequestingReturn() {
+        return this.requestingReturn;
+    }
+
+    public void setRequestingReturn(boolean requestingReturn) {
+        this.requestingReturn = requestingReturn;
+    }
 
 
     public Long getOwnerId() {

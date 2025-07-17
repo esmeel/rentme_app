@@ -70,6 +70,21 @@ public class RentalController {
         this.userService = userService;
     }
 
+    @PostMapping("/{rentalId}/request-return")
+    public ResponseEntity<String> requestReturn(@PathVariable Long rentalId,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        Long userId = jwtUtil.extractUserId(token);
+
+        boolean success = rentalService.requestReturn(rentalId, userId);
+        if (success) {
+            return ResponseEntity.ok("Return request registered");
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You are not allowed to request return");
+        }
+    }
+
     @GetMapping("/exists")
     public ResponseEntity<Boolean> rentalExists(@RequestParam Long toolId,
             @RequestParam Long renterId) {
