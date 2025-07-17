@@ -73,6 +73,8 @@ public class RentalController {
     @PostMapping("/{rentalId}/request-return")
     public ResponseEntity<String> requestReturn(@PathVariable Long rentalId,
             @RequestHeader("Authorization") String authHeader) {
+        System.out.println("Return request function");
+
         String token = authHeader.replace("Bearer ", "");
         Long userId = jwtUtil.extractUserId(token);
         System.out.println("Return request from" + userId);
