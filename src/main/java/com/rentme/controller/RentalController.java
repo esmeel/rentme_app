@@ -75,7 +75,7 @@ public class RentalController {
             @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         Long userId = jwtUtil.extractUserId(token);
-
+        System.out.println("Return request from" + userId);
         boolean success = rentalService.requestReturn(rentalId, userId);
         if (success) {
             return ResponseEntity.ok("Return request registered");
