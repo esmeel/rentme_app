@@ -77,7 +77,7 @@ public class RentalController {
          * ong receiverId, Long senderId, NotificationType type, String message, Long rentalId,
          * java.time.LocalDate starts, java.time.LocalDate ends
          */
-        Rental rental = rentalRepository.findRentalByRentalId(request.getRentalId());
+        Rental rental = rentalRepository.findRentalById(request.getRentalId());
         User sender = userRepository.getUserById(request.getRenterId());
         User receiver = userRepository.getUserById(rental.getOwnerId());
         Notification notif = new Notification();
@@ -87,6 +87,8 @@ public class RentalController {
         notif.setSenderId(sender.getId());
         notif.setReceiverName(receiver.getName());
         notif.setSenderName(sender.getName());
+        notif.setToolName(rental.getToolName());
+        notif.setToolPicUrl(rental.getToolPic());
         notif.setIsRead(false);
         notif.setStarts(rental.getStartDate());
         notif.setEnds(rental.getEndDate());
