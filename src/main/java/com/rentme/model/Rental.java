@@ -24,7 +24,7 @@ public class Rental {
     @Enumerated(EnumType.STRING)
     private RentalStatus status;
     @Column(name = "requested_return_by_renter")
-    private Boolean requestedReturnByRenter = false;
+    private Boolean requestedReturnByRenter;
 
     public Boolean isRequestedReturnByRenter() {
         return this.requestedReturnByRenter;

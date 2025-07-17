@@ -20,7 +20,7 @@ public class RentalResponseDTO {
   private String ownerName;
   private String renterName;
   private boolean accepted;
-  private Boolean requestedReturnByRenter = false;
+  private Boolean requestedReturnByRenter;
 
 
   public RentalResponseDTO(Rental rental) {
@@ -36,6 +36,7 @@ public class RentalResponseDTO {
     this.ownerName = rental.getOwnerName();
     this.renterName = rental.getRenterName();
     this.accepted = rental.isAccepted();
+    this.requestedReturnByRenter = rental.getRequestedReturnByRenter();
   }
 
   public String getToolName() {
