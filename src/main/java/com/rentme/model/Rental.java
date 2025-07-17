@@ -23,6 +23,20 @@ public class Rental {
     private Long renterId;
     @Enumerated(EnumType.STRING)
     private RentalStatus status;
+    @Column(name = "requested_return_by_renter")
+    private boolean requestedReturnByRenter = false;
+
+    public boolean isRequestedReturnByRenter() {
+        return this.requestedReturnByRenter;
+    }
+
+    public boolean getRequestedReturnByRenter() {
+        return this.requestedReturnByRenter;
+    }
+
+    public void setRequestedReturnByRenter(boolean requestedReturnByRenter) {
+        this.requestedReturnByRenter = requestedReturnByRenter;
+    }
 
     private LocalDateTime activatedAt;
 

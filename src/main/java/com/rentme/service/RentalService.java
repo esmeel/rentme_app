@@ -106,6 +106,24 @@ public class RentalService {
         return rental;
     }
 
+    public boolean requestMarkReturned(Long rentalId, Long userId) {
+        Optional<Rental> optionalRental = rentalRepository.findById(rentalId);
+        if (optionalRental.isEmpty())
+            return false;
+
+        Rental rental = optionalRental.get();
+
+        // تأكّد أن userId هو المستأجر وليس المالك
+        if (!rental.getRenter().getId().equals(userId)) {
+            return false;
+        }
+
+        // تحدّث الحالة أو تُسجّل طلب الإرجاع بأي شكل يناسب منطقك
+        rental.setRequestedReturnByRenter(true); // يفترض أن هذا الحقل موجود
+        rentalRepository.save(rental);
+        return true;
+    }
+
     public boolean requestReturn(Long rentalId, Long userId) {
         Optional<Rental> rentalOpt = rentalRepository.findById(rentalId);
 

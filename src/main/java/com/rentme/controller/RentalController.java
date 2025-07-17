@@ -22,6 +22,7 @@ import com.rentme.data_transfer_objects.MeetingConfirmationDTO;
 import com.rentme.data_transfer_objects.RentalRequest;
 import com.rentme.data_transfer_objects.RentalResponseDTO;
 import com.rentme.data_transfer_objects.RentalResponseRequest;
+import com.rentme.data_transfer_objects.ReturnToolRequestDTO;
 import com.rentme.model.Notification;
 import com.rentme.model.NotificationType;
 import com.rentme.model.Rental;
@@ -70,15 +71,28 @@ public class RentalController {
         this.userService = userService;
     }
 
-    @PostMapping("/{rentalId}/request-return")
-    public ResponseEntity<String> requestReturn(@PathVariable Long rentalId,
+    @PostMapping("/{rentalId}/request-mark-returned")
+    public ResponseEntity<String> requestMarkReturned(@PathVariable Long rentalId,
+            HttpServletRequest request) {
+        String token = jwtUtil.extractToken(request);
+        Long userId = jwtUtil.extractUserId(token);
+
+        boolean success = rentalService.requestMarkReturned(rentalId, userId);
+        if (success) {
+            return ResponseEntity.ok("Return request submitted");
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You are not allowed to mark this rental as returned");
+        }
+    }
+
+    @PostMapping("/request-return")
+    public ResponseEntity<String> requestReturn(@RequestBody ReturnToolRequestDTO request,
             @RequestHeader("Authorization") String authHeader) {
         System.out.println("Return request function");
 
-        String token = authHeader.replace("Bearer ", "");
-        Long userId = jwtUtil.extractUserId(token);
-        System.out.println("Return request from" + userId);
-        boolean success = rentalService.requestReturn(rentalId, userId);
+        System.out.println("Return request from" + request.getRentalId());
+        boolean success = rentalService.requestReturn(request.getRentalId(), request.getRenterId());
         if (success) {
             return ResponseEntity.ok("Return request registered");
         } else {
