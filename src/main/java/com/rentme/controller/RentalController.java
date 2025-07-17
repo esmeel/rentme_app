@@ -71,13 +71,11 @@ public class RentalController {
         this.userService = userService;
     }
 
-    @PostMapping("/{rentalId}/request-mark-returned")
-    public ResponseEntity<String> requestMarkReturned(@PathVariable Long rentalId,
-            HttpServletRequest request) {
-        String token = jwtUtil.extractToken(request);
-        Long userId = jwtUtil.extractUserId(token);
+    @PostMapping("/request-mark-returned")
+    public ResponseEntity<String> requestMarkReturned(@RequestBody ReturnToolRequestDTO request) {
 
-        boolean success = rentalService.requestMarkReturned(rentalId, userId);
+        boolean success =
+                rentalService.requestMarkReturned(request.getRentalId(), request.getRenterId());
         if (success) {
             return ResponseEntity.ok("Return request submitted");
         } else {

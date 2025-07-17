@@ -24,17 +24,17 @@ public class Rental {
     @Enumerated(EnumType.STRING)
     private RentalStatus status;
     @Column(name = "requested_return_by_renter")
-    private boolean requestedReturnByRenter = false;
+    private Boolean requestedReturnByRenter = false;
 
-    public boolean isRequestedReturnByRenter() {
+    public Boolean isRequestedReturnByRenter() {
         return this.requestedReturnByRenter;
     }
 
-    public boolean getRequestedReturnByRenter() {
+    public Boolean getRequestedReturnByRenter() {
         return this.requestedReturnByRenter;
     }
 
-    public void setRequestedReturnByRenter(boolean requestedReturnByRenter) {
+    public void setRequestedReturnByRenter(Boolean requestedReturnByRenter) {
         this.requestedReturnByRenter = requestedReturnByRenter;
     }
 
