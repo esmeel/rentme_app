@@ -73,7 +73,32 @@ public class RentalController {
 
     @PostMapping("/request-mark-returned")
     public ResponseEntity<String> requestMarkReturned(@RequestBody ReturnToolRequestDTO request) {
+        /*
+         * ong receiverId, Long senderId, NotificationType type, String message, Long rentalId,
+         * java.time.LocalDate starts, java.time.LocalDate ends
+         */
+        Rental rental = rentalRepository.findRentalByRentalId(request.getRentalId());
+        User sender = userRepository.getUserById(request.getRenterId());
+        User receiver = userRepository.getUserById(rental.getOwnerId());
+        Notification notif = new Notification();
+        notif.setAddress("");
+        notif.setCreatedAt(LocalDateTime.now());
+        notif.setReceiverId(receiver.getId());
+        notif.setSenderId(sender.getId());
+        notif.setReceiverName(receiver.getName());
+        notif.setSenderName(sender.getName());
+        notif.setIsRead(false);
+        notif.setStarts(rental.getStartDate());
+        notif.setEnds(rental.getEndDate());
+        notif.setRelatedId(rental.getId());
+        notif.setType(NotificationType.RETURN_CONFIRMATION_REQUEST);
+        notif.setMessage(sender.getName()
+                + " is requesting that you confirm the return of the tool " + rental.getToolName());
 
+
+        notificationService.sendNotification(notif);
+        System.err.println("request-mark-returned for Rental id:" + request.getRentalId()
+                + " User id: " + request.getRenterId());
         boolean success =
                 rentalService.requestMarkReturned(request.getRentalId(), request.getRenterId());
         if (success) {
@@ -82,6 +107,7 @@ public class RentalController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("You are not allowed to mark this rental as returned");
         }
+
     }
 
     @PostMapping("/request-return")

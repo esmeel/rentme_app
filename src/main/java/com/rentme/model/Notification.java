@@ -36,6 +36,26 @@ public class Notification {
   @Column(name = "ends")
   private java.time.LocalDate ends;
 
+  Double latitude;
+
+  Double longitude;
+
+  boolean locationRequested = false;
+
+  boolean timeRequested = false;
+
+
+
+  @Enumerated(EnumType.STRING)
+  private NotificationType type;
+
+  @Column(name = "is_read")
+  private boolean read;
+
+  private Long relatedId;
+
+  private LocalDateTime createdAt = LocalDateTime.now();
+
   public java.time.LocalDate getStarts() {
     return this.starts;
   }
@@ -52,8 +72,6 @@ public class Notification {
     this.ends = ends;
   }
 
-
-
   public String getMeeting() {
     return this.meeting;
   }
@@ -61,23 +79,6 @@ public class Notification {
   public void setMeeting(String meeting) {
     this.meeting = meeting;
   }
-
-  Double latitude;
-
-  Double longitude;
-
-  boolean locationRequested = false;
-  boolean timeRequested = false;
-
-  @Enumerated(EnumType.STRING)
-  private NotificationType type;
-
-  @Column(name = "is_read")
-  private boolean read;
-
-  private Long relatedId;
-
-  private LocalDateTime createdAt = LocalDateTime.now();
 
   public String getNotes() {
     return this.notes;

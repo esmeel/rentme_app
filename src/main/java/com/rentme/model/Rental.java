@@ -203,14 +203,20 @@ public class Rental {
         this.createdAt = createdAt;
     }
 
+
     @Override
     public String toString() {
-        return "{" + " id='" + getId() + "'" + ", owner_id='" + getOwnerId() + "'" + ", senderId='"
-                + getRenterId() + "'" + ", status='" + getStatus() + "'" + ", activatedAt='"
-                + getActivatedAt() + "'" + ", tool='" + getTool() + "'" + ", toolPic='"
-                + getToolPic() + "'" + ", startDate='" + getStartDate() + "'" + ", endDate='"
-                + getEndDate() + "'" + ", macAddress='" + getMacAddress() + "'" + ", accepted='"
-                + isAccepted() + "'" + ", createdAt='" + getCreatedAt() + "'" + "}";
+        return "{" + " id='" + getId() + "'" + ", ownerId='" + getOwnerId() + "'" + ", renterId='"
+                + getRenterId() + "'" + ", status='" + getStatus() + "'"
+                + ", requestedReturnByRenter='" + isRequestedReturnByRenter() + "'"
+                + ", activatedAt='" + getActivatedAt() + "'" + ", tool='" + getTool() + "'"
+                + ", toolPic='" + getToolPic() + "'" + ", toolName='" + getToolName() + "'"
+                + ", ownerName='" + getOwnerName() + "'" + ", renterName='" + getRenterName() + "'"
+                + ", startDate='" + getStartDate() + "'" + ", endDate='" + getEndDate() + "'"
+                + ", macAddress='" + getMacAddress() + "'" + ", accepted='" + isAccepted() + "'"
+                + ", createdAt='" + getCreatedAt() + "'" + ", requestingReturn='"
+                + isRequestingReturn() + "'" + "}";
     }
+
 
 }
