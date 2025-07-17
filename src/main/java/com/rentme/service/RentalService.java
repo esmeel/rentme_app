@@ -114,7 +114,7 @@ public class RentalService {
         Rental rental = optionalRental.get();
 
         // تأكّد أن userId هو المستأجر وليس المالك
-        if (!rental.getRenter().getId().equals(userId)) {
+        if (!rental.getRenterId().equals(userId)) {
             return false;
         }
 
