@@ -73,10 +73,7 @@ public class RentalController {
 
     @PostMapping("/request-mark-returned")
     public ResponseEntity<String> requestMarkReturned(@RequestBody ReturnToolRequestDTO request) {
-        /*
-         * ong receiverId, Long senderId, NotificationType type, String message, Long rentalId,
-         * java.time.LocalDate starts, java.time.LocalDate ends
-         */
+
         Rental rental = rentalRepository.findRentalById(request.getRentalId());
         User sender = userRepository.getUserById(request.getRenterId());
         User receiver = userRepository.getUserById(rental.getOwnerId());
@@ -99,8 +96,7 @@ public class RentalController {
 
 
         notificationService.sendNotification(notif);
-        System.err.println("request-mark-returned for Rental id:" + request.getRentalId()
-                + " User id: " + request.getRenterId());
+
         boolean success =
                 rentalService.requestMarkReturned(request.getRentalId(), request.getRenterId());
         if (success) {
@@ -189,7 +185,7 @@ public class RentalController {
         if (response.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-
+        System.out.println("Rentals body returned:" + response.toString());
         return ResponseEntity.ok(response);
     }
 

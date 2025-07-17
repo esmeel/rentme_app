@@ -20,6 +20,8 @@ public class RentalResponseDTO {
   private String ownerName;
   private String renterName;
   private boolean accepted;
+  private Boolean requestedReturnByRenter = false;
+
 
   public RentalResponseDTO(Rental rental) {
     this.id = rental.getId();
@@ -42,6 +44,18 @@ public class RentalResponseDTO {
 
   public void setToolName(String toolName) {
     this.toolName = toolName;
+  }
+
+  public Boolean isRequestedReturnByRenter() {
+    return this.requestedReturnByRenter;
+  }
+
+  public Boolean getRequestedReturnByRenter() {
+    return this.requestedReturnByRenter;
+  }
+
+  public void setRequestedReturnByRenter(Boolean requestedReturnByRenter) {
+    this.requestedReturnByRenter = requestedReturnByRenter;
   }
 
   public String getToolPic() {
@@ -92,7 +106,7 @@ public class RentalResponseDTO {
 
   public RentalResponseDTO(Long id, RentalStatus status, LocalDate startDate, LocalDate endDate,
       String toolName, String toolPic, Long toolId, Long ownerId, Long renterId, String ownerName,
-      String renterName, boolean accepted) {
+      String renterName, boolean accepted, boolean requestedReturnByRenter) {
     this.id = id;
     this.status = status;
     this.startDate = startDate;
@@ -105,6 +119,8 @@ public class RentalResponseDTO {
     this.ownerName = ownerName;
     this.renterName = renterName;
     this.accepted = accepted;
+    this.requestedReturnByRenter = requestedReturnByRenter;
+    //
   }
 
 
@@ -166,10 +182,16 @@ public class RentalResponseDTO {
     this.renterId = renterId;
   }
 
+
   @Override
   public String toString() {
-    return "{" + "id=" + id + ", startDate='" + startDate + '\'' + ", endDate='" + endDate + '\''
-        + ", status='" + status + '\'' + ", toolId=" + toolId + ", ownerId=" + ownerId
-        + ", renterId=" + renterId + '}';
+    return "{" + " id='" + getId() + "'" + ", startDate='" + getStartDate() + "'" + ", endDate='"
+        + getEndDate() + "'" + ", createdAt='" + getCreatedAt() + "'" + ", status='" + getStatus()
+        + "'" + ", toolId='" + getToolId() + "'" + ", ownerId='" + getOwnerId() + "'"
+        + ", renterId='" + getRenterId() + "'" + ", toolName='" + getToolName() + "'"
+        + ", toolPic='" + getToolPic() + "'" + ", ownerName='" + getOwnerName() + "'"
+        + ", renterName='" + getRenterName() + "'" + ", accepted='" + isAccepted() + "'"
+        + ", requestedReturnByRenter='" + isRequestedReturnByRenter() + "'" + "}";
   }
+
 }
