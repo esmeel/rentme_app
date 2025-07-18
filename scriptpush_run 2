@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Git operations
+git add .
+git commit -m "${1:-Quick update}"
+git push
+
+# Run Maven Spring Boot
+echo "Starting Spring Boot..."
+./mvnw spring-boot:run
+
+
+-------------------
+get the newer:
+git pull
+
+./mvnw spring-boot:run

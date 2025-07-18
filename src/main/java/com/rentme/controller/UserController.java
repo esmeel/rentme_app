@@ -68,12 +68,9 @@ public class UserController {
 
     /// Update:
     @PostMapping("/update")
-    public ResponseEntity<?> updateUserProfile(
-            @RequestPart("name") String name,
-            @RequestPart("email") String email,
-            @RequestPart("phone") String phone,
-            @RequestPart("city") String city,
-            @RequestPart("country") String country,
+    public ResponseEntity<?> updateUserProfile(@RequestPart("name") String name,
+            @RequestPart("email") String email, @RequestPart("phone") String phone,
+            @RequestPart("city") String city, @RequestPart("country") String country,
             @RequestPart(value = "file", required = false) MultipartFile file,
             HttpServletRequest request) {
         System.out.println("🔧 Received request: " + request);
@@ -106,7 +103,7 @@ public class UserController {
                 Path filePath = uploadPath.resolve(fileName);
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                String fullUrl = IpLocal. get() + "uploads/profile_pics/" + fileName;
+                String fullUrl = IpLocal.get() + "uploads/profile_pics/" + fileName;
 
                 user.setProfilePicUrl(fullUrl);
                 userRepository.save(user);
@@ -125,7 +122,8 @@ public class UserController {
     private String saveProfileImageFromUrl(String imageUrl) {
         try {
             String extension = "jpg"; // Google profile images are usually JPEG
-            String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + extension;
+            String fileName =
+                    System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + extension;
 
             Path uploadPath = Paths.get("uploads", "profile_pics");
             Files.createDirectories(uploadPath);
@@ -135,7 +133,7 @@ public class UserController {
                 Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            return IpLocal. get() + "uploads/profile_pics/" + fileName;
+            return IpLocal.get() + "uploads/profile_pics/" + fileName;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -189,14 +187,14 @@ public class UserController {
     public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequestDTO request) {
         try {
             // ✅ تحقق من صحة التوكن باستخدام GoogleIdTokenVerifier
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    JacksonFactory.getDefaultInstance())
-                    .setAudience(Collections
-                            .singletonList("462915657678-0l5vg6r0ik75a1s3hkggog7b39hu0ha4.apps.googleusercontent.com")) // Web
-                                                                                                                        // client
-                                                                                                                        // ID
-                    .build();
+            GoogleIdTokenVerifier verifier =
+                    new GoogleIdTokenVerifier.Builder(GoogleNetHttpTransport.newTrustedTransport(),
+                            JacksonFactory.getDefaultInstance())
+                                    .setAudience(Collections.singletonList(
+                                            "462915657678-0l5vg6r0ik75a1s3hkggog7b39hu0ha4.apps.googleusercontent.com")) // Web
+                                                                                                                         // client
+                                                                                                                         // ID
+                                    .build();
 
             GoogleIdToken idToken = verifier.verify(request.getIdToken());
             if (idToken == null) {
@@ -272,9 +270,7 @@ public class UserController {
             String token = jwtUtil.generateToken(user.getEmail());
             UserResponseDTO userDTO = new UserResponseDTO(user);
 
-            return ResponseEntity.ok(Map.of(
-                    "token", token,
-                    "user", userDTO));
+            return ResponseEntity.ok(Map.of("token", token, "user", userDTO));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -341,11 +337,9 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
 
-        List<ToolResponseDTO> savedTools = user.getSavedToolsIds().stream()
-                .map(toolService::findById)
-                .filter(Objects::nonNull)
-                .map(ToolResponseDTO::new)
-                .collect(Collectors.toList());
+        List<ToolResponseDTO> savedTools =
+                user.getSavedToolsIds().stream().map(toolService::findById).filter(Objects::nonNull)
+                        .map(ToolResponseDTO::new).collect(Collectors.toList());
 
         return ResponseEntity.ok(savedTools);
     }
