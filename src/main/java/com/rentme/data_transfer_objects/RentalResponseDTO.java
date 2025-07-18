@@ -21,6 +21,7 @@ public class RentalResponseDTO {
   private String renterName;
   private boolean accepted;
   private Boolean requestedReturnByRenter;
+  private Boolean confirmedReturnedByOwner;
 
 
   public RentalResponseDTO(Rental rental) {
@@ -37,6 +38,7 @@ public class RentalResponseDTO {
     this.renterName = rental.getRenterName();
     this.accepted = rental.isAccepted();
     this.requestedReturnByRenter = rental.getRequestedReturnByRenter();
+    this.confirmedReturnedByOwner = rental.getConfirmedReturnedByOwner();
   }
 
   public String getToolName() {
@@ -107,7 +109,8 @@ public class RentalResponseDTO {
 
   public RentalResponseDTO(Long id, RentalStatus status, LocalDate startDate, LocalDate endDate,
       String toolName, String toolPic, Long toolId, Long ownerId, Long renterId, String ownerName,
-      String renterName, boolean accepted, boolean requestedReturnByRenter) {
+      String renterName, boolean accepted, boolean requestedReturnByRenter,
+      boolean confirmedReturnedByOwner) {
     this.id = id;
     this.status = status;
     this.startDate = startDate;
@@ -121,11 +124,15 @@ public class RentalResponseDTO {
     this.renterName = renterName;
     this.accepted = accepted;
     this.requestedReturnByRenter = requestedReturnByRenter;
+    this.confirmedReturnedByOwner = confirmedReturnedByOwner;
     //
   }
 
 
   // Getters and setters
+  public boolean isConfirmedReturnedByOwner() {
+    return this.confirmedReturnedByOwner;
+  }
 
   public Long getId() {
     return id;
@@ -183,7 +190,6 @@ public class RentalResponseDTO {
     this.renterId = renterId;
   }
 
-
   @Override
   public String toString() {
     return "{" + " id='" + getId() + "'" + ", startDate='" + getStartDate() + "'" + ", endDate='"
@@ -192,7 +198,10 @@ public class RentalResponseDTO {
         + ", renterId='" + getRenterId() + "'" + ", toolName='" + getToolName() + "'"
         + ", toolPic='" + getToolPic() + "'" + ", ownerName='" + getOwnerName() + "'"
         + ", renterName='" + getRenterName() + "'" + ", accepted='" + isAccepted() + "'"
-        + ", requestedReturnByRenter='" + isRequestedReturnByRenter() + "'" + "}";
+        + ", requestedReturnByRenter='" + isRequestedReturnByRenter() + "'"
+        + ", confirmedReturnedByOwner='" + isConfirmedReturnedByOwner() + "'" + "}";
   }
+
+
 
 }

@@ -25,18 +25,17 @@ public class Rental {
     private RentalStatus status;
     @Column(name = "requested_return_by_renter")
     private Boolean requestedReturnByRenter;
+    @Column(name = "confirmed_returned_by_owner")
+    private boolean confirmedReturnedByOwner = false;
 
-    public Boolean isRequestedReturnByRenter() {
-        return this.requestedReturnByRenter;
+    public boolean isConfirmedReturnedByOwner() {
+        return this.confirmedReturnedByOwner;
     }
 
-    public Boolean getRequestedReturnByRenter() {
-        return this.requestedReturnByRenter;
+    public boolean getConfirmedReturnedByOwner() {
+        return this.confirmedReturnedByOwner;
     }
 
-    public void setRequestedReturnByRenter(Boolean requestedReturnByRenter) {
-        this.requestedReturnByRenter = requestedReturnByRenter;
-    }
 
     private LocalDateTime activatedAt;
 
@@ -46,16 +45,46 @@ public class Rental {
 
     private String toolPic;
 
+
+
     private String toolName;
 
     private String ownerName;
 
-
     private String renterName;
+
     private LocalDate startDate;
+
     private LocalDate endDate;
+
     private String macAddress;
+
     private boolean accepted;
+
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "requesting_return")
+    private boolean requestingReturn = false;
+
+    public boolean isRequestedReturnByRenter() {
+        return requestedReturnByRenter;
+    }
+
+    public void setConfirmedReturnedByOwner(boolean confirmed) {
+        this.confirmedReturnedByOwner = confirmed;
+    }
+
+    public void setToolAvailable(boolean available) {
+        this.tool.setAvailable(available);
+    }
+
+    public Boolean getRequestedReturnByRenter() {
+        return this.requestedReturnByRenter;
+    }
+
+    public void setRequestedReturnByRenter(Boolean requestedReturnByRenter) {
+        this.requestedReturnByRenter = requestedReturnByRenter;
+    }
 
     public String getToolName() {
         return this.toolName;
@@ -73,6 +102,7 @@ public class Rental {
         this.ownerName = ownerName;
     }
 
+
     public String getRenterName() {
         return this.renterName;
     }
@@ -81,9 +111,6 @@ public class Rental {
         this.renterName = renterName;
     }
 
-
-    private LocalDateTime createdAt = LocalDateTime.now();
-
     public LocalDateTime getActivatedAt() {
         return this.activatedAt;
     }
@@ -91,9 +118,6 @@ public class Rental {
     public void setActivatedAt(LocalDateTime activatedAt) {
         this.activatedAt = activatedAt;
     }
-
-    @Column(name = "requesting_return")
-    private boolean requestingReturn = false;
 
     public boolean isRequestingReturn() {
         return this.requestingReturn;

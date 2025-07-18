@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.rentme.model.Notification;
@@ -123,6 +125,37 @@ public class RentalService {
         rentalRepository.save(rental);
         return true;
     }
+
+
+    public ResponseEntity<?> confirmReturn(Long rentalId, String email) {
+        Optional<Rental> rentalOpt = rentalRepository.findById(rentalId);
+        if (rentalOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rental not found");
+        }
+
+        Rental rental = rentalOpt.get();
+        // get the owner email by id
+        User owner = userRepository.getUserById(rental.getOwnerId());
+        // التحقّق من أنّ المستخدم هو المالك
+        if (!email.equals(owner.getEmail())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Only the owner can confirm return");
+        }
+
+        if (!rental.isRequestedReturnByRenter()) {
+            return ResponseEntity.badRequest()
+                    .body("Tool has not been requested for return by renter");
+        }
+
+        rental.setConfirmedReturnedByOwner(true);
+        rental.setStatus(RentalStatus.ENDED);
+        rental.setToolAvailable(true); // إعادة الأداة كمتاحة
+        rentalRepository.save(rental);
+        notificationService.deleteByTypeAndRental(NotificationType.RETURN_CONFIRMATION_REQUEST,
+                rentalId);
+        return ResponseEntity.ok("Tool return confirmed successfully");
+    }
+
 
     public boolean requestReturn(Long rentalId, Long userId) {
         Optional<Rental> rentalOpt = rentalRepository.findById(rentalId);

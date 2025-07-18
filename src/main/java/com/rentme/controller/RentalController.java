@@ -189,6 +189,17 @@ public class RentalController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{rentalId}/confirm-return")
+    public ResponseEntity<?> confirmToolReturned(@PathVariable Long rentalId,
+            HttpServletRequest request) {
+        String token = jwtUtil.extractToken(request);
+        System.out.println("confirm-return, Token:" + token);
+
+        String email = jwtUtil.extractEmail(token);
+        return rentalService.confirmReturn(rentalId, email);
+    }
+
+
     @GetMapping("/incoming")
     public ResponseEntity<?> getIncomingRequests(HttpServletRequest request) {
         String token = jwtUtil.extractTokenFromRequest(request);

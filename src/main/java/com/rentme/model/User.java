@@ -33,6 +33,54 @@ public class User implements UserDetails {
     private Double defaultLongitude;
     private String defaultAddress;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String role = "USER"; // القيمة الافتراضية
+
+    private String loginProvider;
+
+    private String name;
+
+    private String email;
+
+    private String phone;
+
+    private String city;
+    private String country;
+
+    private String profilePicUrl;
+
+    private boolean verified;
+
+    @Column(nullable = true)
+    private String password;
+
+    private double ratingAvg;
+
+    private int stars;
+
+    private int ratingCount;
+    private LocalDateTime idVerifyTime;
+    @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<UserReview> userReviews;
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Tool> tools;
+    // ✅ الأدوات المحفوظة كـ IDs فقط
+    @ElementCollection
+    @CollectionTable(name = "user_saved_tool_ids", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "tool_id")
+    private Set<Long> savedToolsIds = new HashSet<>();
+    @Column(name = "fcm_token")
+    private String fcmToken;
+    @ManyToMany
+    @JoinTable(name = "user_saved_tools", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "tool_id"))
+    private Set<Tool> savedTools = new HashSet<>();
+
     public String getDefaultAddress() {
         return this.defaultAddress;
     }
@@ -57,11 +105,6 @@ public class User implements UserDetails {
         this.defaultLongitude = defaultLongitude;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String role = "USER"; // القيمة الافتراضية
-
     public String getRole() {
         return role;
     }
@@ -69,8 +112,6 @@ public class User implements UserDetails {
     public void setRole(String role) {
         this.role = role;
     }
-
-    private String loginProvider;
 
     public String getLoginProvider() {
         return this.loginProvider;
@@ -80,19 +121,7 @@ public class User implements UserDetails {
         this.loginProvider = loginProvider;
     }
 
-    private String name;
-    private String email;
-    private String phone;
-    private String city;
-    private String country;
-    private String profilePicUrl;
-    private boolean verified;
-    @Column(nullable = true)
-    private String password;
-    private double ratingAvg;
-    private int stars;
-    private int ratingCount;
-    private LocalDateTime idVerifyTime;
+    // Getters & Setters
 
     public LocalDateTime getIdVerifyTime() {
         return this.idVerifyTime;
@@ -101,22 +130,6 @@ public class User implements UserDetails {
     public void setIdVerifyTime(LocalDateTime idVerifyTime) {
         this.idVerifyTime = idVerifyTime;
     }
-
-    @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<UserReview> userReviews;
-
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Tool> tools;
-
-    // ✅ الأدوات المحفوظة كـ IDs فقط
-    @ElementCollection
-    @CollectionTable(name = "user_saved_tool_ids", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "tool_id")
-    private Set<Long> savedToolsIds = new HashSet<>();
-
-    // Getters & Setters
 
     public Long getId() {
         return id;
@@ -198,6 +211,8 @@ public class User implements UserDetails {
         this.tools = tools;
     }
 
+    // UserDetails overrides
+
     public Set<Long> getSavedToolsIds() {
         return savedToolsIds;
     }
@@ -205,8 +220,6 @@ public class User implements UserDetails {
     public void setSavedToolsIds(Set<Long> savedToolsIds) {
         this.savedToolsIds = savedToolsIds;
     }
-
-    // UserDetails overrides
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -250,9 +263,6 @@ public class User implements UserDetails {
         this.ratingCount = ratingCount;
     }
 
-    @Column(name = "fcm_token")
-    private String fcmToken;
-
     public String getFcmToken() {
         return fcmToken;
     }
@@ -260,10 +270,6 @@ public class User implements UserDetails {
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
     }
-
-    @ManyToMany
-    @JoinTable(name = "user_saved_tools", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "tool_id"))
-    private Set<Tool> savedTools = new HashSet<>();
 
     public Set<Tool> getSavedTools() {
         return savedTools;
@@ -279,19 +285,10 @@ public class User implements UserDetails {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", city='" + city + '\'' +
-                ", country='" + country + '\'' +
-                ", profilePicUrl='" + getProfilePicUrl() + '\'' +
-                ", verified=" + verified +
-                ", savedToolsIds=" + savedToolsIds +
-                ", rating Avg=" + ratingAvg +
-                ", stars=" + stars +
-                ", rating Count=" + ratingCount +
-                '}';
+        return "User{" + "id=" + id + ", name='" + name + '\'' + ", email='" + email + '\''
+                + ", phone='" + phone + '\'' + ", city='" + city + '\'' + ", country='" + country
+                + '\'' + ", profilePicUrl='" + getProfilePicUrl() + '\'' + ", verified=" + verified
+                + ", savedToolsIds=" + savedToolsIds + ", rating Avg=" + ratingAvg + ", stars="
+                + stars + ", rating Count=" + ratingCount + '}';
     }
 }

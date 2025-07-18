@@ -42,6 +42,8 @@ public class JwtUtil {
 
     public Long extractUserId(String token) {
         Claims claims = extractAllClaims(token);
+        System.out.println("in extractUserId,\n claims:" + claims.toString());
+
         return claims.get("userId", Long.class);
     }
 
