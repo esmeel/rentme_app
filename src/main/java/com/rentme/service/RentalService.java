@@ -57,7 +57,8 @@ public class RentalService {
 
     // إنشاء طلب استئجار جديد
     public Rental createRental(Long toolId, Long renterId, java.time.LocalDate startDate,
-            java.time.LocalDate endDate, NotificationRepository notificationRepository) {
+            java.time.LocalDate endDate, NotificationRepository notificationRepository,
+            double totalPrice) {
 
         this.tool = toolRepository.findById(toolId)
                 .orElseThrow(() -> new RuntimeException("Tool not found"));
@@ -81,6 +82,7 @@ public class RentalService {
         rental.setEndDate(endDate);
         rental.setStatus(RentalStatus.PENDING);
         rental.setCreatedAt(LocalDateTime.now());
+        rental.setTotalPrice(totalPrice);
 
         rentalRepository.save(rental);
         Notification notification = new Notification();
@@ -99,6 +101,8 @@ public class RentalService {
         notification.setEnds(endDate);
 
         notification.setRelatedId(rental.getId());
+        notification.setTotalPrice(totalPrice);
+        notification.setToolId(toolId);
 
         notificationRepository.save(notification);
         /*

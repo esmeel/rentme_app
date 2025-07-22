@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.rentme.data_transfer_objects.ScheduleEntryDTO;
 import com.rentme.data_transfer_objects.ScheduleRequestDTO;
+import com.rentme.model.Notification;
 import com.rentme.model.NotificationType;
 import com.rentme.model.ScheduleEntry;
 import com.rentme.model.User;
@@ -29,7 +30,7 @@ public class ScheduleService {
     this.notificationService = notificationService;
   }
 
-  public void processSchedule(ScheduleRequestDTO request) {
+  public void processSchedule(ScheduleRequestDTO request, Notification notifi) {
     User sender = userRepository.findById(request.getSenderId()).orElse(null);
     User receiver = userRepository.findById(request.getReceiverId()).orElse(null);
 
@@ -57,7 +58,8 @@ public class ScheduleService {
     // إرسال إشعار للمستأجر بأن المالك اقترح جداول مواعيد
     notificationService.sendNotification(receiver.getId(), sender.getId(),
         NotificationType.SCHEDULE_PROPOSAL, "You have received proposed schedule times.",
-        request.getRentalId(), request.getStarts(), request.getEnds());
+        request.getRentalId(), request.getStarts(), request.getEnds(), notifi.getTotalPrice(),
+        notifi.getToolId());
   }
 
   public List<ScheduleEntry> getByRentalId(Long rentalId) {

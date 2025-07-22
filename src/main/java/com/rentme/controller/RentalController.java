@@ -140,7 +140,8 @@ public class RentalController {
                     .body("You already submitted a rental request for this tool.");
         }
         Rental rental = rentalService.createRental(request.getToolId(), request.getRenterId(),
-                request.getStartDate(), request.getEndDate(), notificationRepository);
+                request.getStartDate(), request.getEndDate(), notificationRepository,
+                request.getTotalPrice());
         return ResponseEntity.ok(rental);
     }
 
@@ -294,14 +295,16 @@ public class RentalController {
         scheduleEntryRepository.deleteByRentalIdAndIdNot(entry.getRentalId(), entry.getId());
         User sender = userRepository.findById(entry.getSenderId())
                 .orElseThrow(() -> new RuntimeException("Receiver user not found"));
-
+        Notification n = notificationRepository
+                .findByTypeAndRelatedId(NotificationType.SCHEDULE_PROPOSAL, dto.getRentalId())
+                .get(0);
         notificationService.sendNotification(entry.getReceiverId(), dto.getUserId(),
                 NotificationType.FINAL_SCHEDULE_CONFIRMED,
                 "You will meet with " + sender.getName() + " at: " + entry.getTimeInfo()
                         + "\nPlease confirm receiving ONLY when you recewivr the tool, to begin the rental.",
-                entry.getRentalId(), dto.getStarts(), dto.getEnds());
-        notificationService.deleteByTypeAndRental(NotificationType.SCHEDULE_PROPOSAL,
-                dto.getRentalId());
+                entry.getRentalId(), dto.getStarts(), dto.getEnds(), n.getTotalPrice(),
+                n.getToolId());
+
         notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE,
                 dto.getRentalId());
         return ResponseEntity.ok("Meeting confirmed and renter notified.");

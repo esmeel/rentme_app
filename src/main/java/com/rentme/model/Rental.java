@@ -21,6 +21,16 @@ public class Rental {
     private Long id;
     private Long ownerId;
     private Long renterId;
+    private double totalPrice;
+
+    public double getTotalPrice() {
+        return this.totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
     @Enumerated(EnumType.STRING)
     private RentalStatus status;
     @Column(name = "requested_return_by_renter")

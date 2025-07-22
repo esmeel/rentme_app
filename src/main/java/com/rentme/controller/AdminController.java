@@ -1,5 +1,6 @@
 package com.rentme.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,87 +25,81 @@ import com.rentme.service.NotificationService;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    @Autowired
-    private AdminProvider adminProvider;
-    private final NotificationService notificationService;
-    private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
+        @Autowired
+        private AdminProvider adminProvider;
+        private final NotificationService notificationService;
+        private final UserRepository userRepository;
+        private final JwtUtil jwtUtil;
 
-    @Autowired
-    private IdentityRequestRepository identityRequestRepository;
+        @Autowired
+        private IdentityRequestRepository identityRequestRepository;
 
-    public AdminController(NotificationService notificationService,
-            UserRepository userRepository,
-            JwtUtil jwtUtil) {
-        this.notificationService = notificationService;
-        this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
-    }
-
-    @GetMapping("/identity-requests")
-    public String showPendingRequests(Model model) {
-        List<IdentityRequest> requests = identityRequestRepository.findByStatus("PENDING");
-        model.addAttribute("requests", requests);
-        return "identity_requests";
-    }
-
-    @PostMapping("/identity-requests/{id}/approve")
-    public String approveRequest(
-            @PathVariable Long id,
-            @RequestParam(required = false) String note) {
-
-        IdentityRequest request = identityRequestRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Request not found"));
-
-        request.setStatus("APPROVED");
-        request.setReviewedAt(LocalDateTime.now());
-        request.setAdminNote(note);
-        identityRequestRepository.save(request);
-
-        User user = request.getUser();
-        if (user != null) {
-            user.setVerified(true);
-            user.setIdVerifyTime(LocalDateTime.now());
-            userRepository.save(user);
+        public AdminController(NotificationService notificationService,
+                        UserRepository userRepository, JwtUtil jwtUtil) {
+                this.notificationService = notificationService;
+                this.userRepository = userRepository;
+                this.jwtUtil = jwtUtil;
         }
 
-        notificationService.sendNotification(
-                user.getId(),
-                adminProvider.getAdminUser().getId(), // نظام
-                NotificationType.SYSTEM,
-                "✅ Your identity verification request has been approved." +
-                        (note != null ? "\nNote: " + note : ""),
-                0L);
+        @GetMapping("/identity-requests")
+        public String showPendingRequests(Model model) {
+                List<IdentityRequest> requests = identityRequestRepository.findByStatus("PENDING");
+                model.addAttribute("requests", requests);
+                return "identity_requests";
+        }
 
-        System.out.println("✅ Approval notification sent");
-        return "redirect:/admin/identity-requests";
-    }
+        @PostMapping("/identity-requests/{id}/approve")
+        public String approveRequest(@PathVariable Long id,
+                        @RequestParam(required = false) String note) {
 
-    @PostMapping("/identity-requests/{id}/reject")
-    public String rejectRequest(
-            @PathVariable Long id,
-            @RequestParam(required = false) String note) {
+                IdentityRequest request = identityRequestRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Request not found"));
 
-        IdentityRequest request = identityRequestRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Request not found"));
+                request.setStatus("APPROVED");
+                request.setReviewedAt(LocalDateTime.now());
+                request.setAdminNote(note);
+                identityRequestRepository.save(request);
 
-        request.setStatus("REJECTED");
-        request.setReviewedAt(LocalDateTime.now());
-        request.setAdminNote(note);
-        identityRequestRepository.save(request);
+                User user = request.getUser();
+                if (user != null) {
+                        user.setVerified(true);
+                        user.setIdVerifyTime(LocalDateTime.now());
+                        userRepository.save(user);
+                }
 
-        User user = request.getUser();
+                notificationService.sendNotification(user.getId(),
+                                adminProvider.getAdminUser().getId(), // نظام
+                                NotificationType.SYSTEM,
+                                "✅ Your identity verification request has been approved."
+                                                + (note != null ? "\nNote: " + note : ""),
+                                0L, LocalDate.now(), LocalDate.now(), 0.0, 0L);
 
-        notificationService.sendNotification(
-                user.getId(),
-                adminProvider.getAdminUser().getId(),
-                NotificationType.SYSTEM,
-                "❌ Your identity verification request has been rejected." +
-                        (note != null ? "\nNote: " + note : ""),
-                0L);
+                System.out.println("✅ Approval notification sent");
+                return "redirect:/admin/identity-requests";
+        }
 
-        System.out.println("❌ Rejection notification sent");
-        return "redirect:/admin/identity-requests";
-    }
+        @PostMapping("/identity-requests/{id}/reject")
+        public String rejectRequest(@PathVariable Long id,
+                        @RequestParam(required = false) String note) {
+
+                IdentityRequest request = identityRequestRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+                request.setStatus("REJECTED");
+                request.setReviewedAt(LocalDateTime.now());
+                request.setAdminNote(note);
+                identityRequestRepository.save(request);
+
+                User user = request.getUser();
+
+                notificationService.sendNotification(user.getId(),
+                                adminProvider.getAdminUser().getId(), NotificationType.SYSTEM,
+                                "❌ Your identity verification request has been rejected."
+                                                + (note != null ? "\nNote: " + note : ""),
+                                0L);
+
+                System.out.println("❌ Rejection notification sent");
+                return "redirect:/admin/identity-requests";
+        }
 
 }

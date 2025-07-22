@@ -7,6 +7,15 @@ public class RentalRequest {
   private Long renterId;
   private LocalDate startDate;
   private LocalDate endDate;
+  private double totalPrice;
+
+  public double getTotalPrice() {
+    return this.totalPrice;
+  }
+
+  public void setTotalPrice(double totalPrice) {
+    this.totalPrice = totalPrice;
+  }
 
 
   public Long getToolId() {

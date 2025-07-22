@@ -35,6 +35,13 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.braintreepayments.gateway</groupId>
+            <artifactId>braintree-java</artifactId>
+            <version>3.20.0</version>
+        </dependency>
+
+
 
 
         <!-- JWT - JSON Web Token -->

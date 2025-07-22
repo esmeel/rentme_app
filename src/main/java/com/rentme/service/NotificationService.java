@@ -34,7 +34,8 @@ public class NotificationService {
   // private java.time.LocalDate starts;
   // private java.time.LocalDate ends;
   public void sendNotification(Long receiverId, Long senderId, NotificationType type,
-      String message, Long rentalId, java.time.LocalDate starts, java.time.LocalDate ends) {
+      String message, Long rentalId, java.time.LocalDate starts, java.time.LocalDate ends,
+      double totalPrice, Long toolId) {
 
     User receiver = userRepository.findById(receiverId)
         .orElseThrow(() -> new RuntimeException("Receiver user not found"));

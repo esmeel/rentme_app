@@ -11,7 +11,10 @@ import com.rentme.model.NotificationType;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
   List<Notification> findByReceiverIdOrderByCreatedAtDesc(Long receiverId);
 
+
+
   void deleteByTypeAndRelatedId(NotificationType type, Long relatedId);
+
 
   List<Notification> findByReceiverId(Long receiverId);
 

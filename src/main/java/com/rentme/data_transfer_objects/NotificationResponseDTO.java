@@ -7,6 +7,60 @@ import com.rentme.model.Notification;
 public class NotificationResponseDTO {
 
   private Long id;
+  private Long toolId;
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Long getToolId() {
+    return this.toolId;
+  }
+
+  public void setToolId(Long toolId) {
+    this.toolId = toolId;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
+  public boolean getRead() {
+    return this.read;
+  }
+
+  public void setRead(boolean read) {
+    this.read = read;
+  }
+
+  public void setRelatedId(Long relatedId) {
+    this.relatedId = relatedId;
+  }
+
+  public void setSenderId(Long senderId) {
+    this.senderId = senderId;
+  }
+
+  public void setSenderName(String senderName) {
+    this.senderName = senderName;
+  }
+
+  public void setReceiverId(Long receiverId) {
+    this.receiverId = receiverId;
+  }
+
+  public void setReceiverName(String receiverName) {
+    this.receiverName = receiverName;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
   private String type;
   private String message;
   private boolean read;
@@ -77,18 +131,11 @@ public class NotificationResponseDTO {
 
   @Override
   public String toString() {
-    return "{" +
-        " id='" + getId() + "'" +
-        ", type='" + getType() + "'" +
-        ", message='" + getMessage() + "'" +
-        ", read='" + isRead() + "'" +
-        ", relatedId='" + getRelatedId() + "'" +
-        ", senderId='" + getSenderId() + "'" +
-        ", senderName='" + getSenderName() + "'" +
-        ", receiverId='" + getReceiverId() + "'" +
-        ", receiverName='" + getReceiverName() + "'" +
-        ", createdAt='" + getCreatedAt() + "'" +
-        "}";
+    return "{" + " id='" + getId() + "'" + ", type='" + getType() + "'" + ", message='"
+        + getMessage() + "'" + ", read='" + isRead() + "'" + ", relatedId='" + getRelatedId() + "'"
+        + ", senderId='" + getSenderId() + "'" + ", senderName='" + getSenderName() + "'"
+        + ", receiverId='" + getReceiverId() + "'" + ", receiverName='" + getReceiverName() + "'"
+        + ", createdAt='" + getCreatedAt() + "'" + "}";
   }
 
 }

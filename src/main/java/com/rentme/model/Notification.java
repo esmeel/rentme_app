@@ -19,8 +19,12 @@ public class Notification {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private Long receiverId;
+  private Long toolId;
+
   private String receiverName;
+
   private Long senderId;
+
   private String senderName;
   private String message;
   private String toolPicUrl;
@@ -29,10 +33,9 @@ public class Notification {
   private String notes;
   @Column(name = "meeting")
   private String meeting;
-
+  private double totalPrice;
   @Column(name = "starts")
   private java.time.LocalDate starts;
-
   @Column(name = "ends")
   private java.time.LocalDate ends;
 
@@ -44,8 +47,6 @@ public class Notification {
 
   boolean timeRequested = false;
 
-
-
   @Enumerated(EnumType.STRING)
   private NotificationType type;
 
@@ -55,6 +56,24 @@ public class Notification {
   private Long relatedId;
 
   private LocalDateTime createdAt = LocalDateTime.now();
+
+
+
+  public Long getToolId() {
+    return this.toolId;
+  }
+
+  public void setToolId(Long toolId) {
+    this.toolId = toolId;
+  }
+
+  public double getTotalPrice() {
+    return this.totalPrice;
+  }
+
+  public void setTotalPrice(double totalPrice) {
+    this.totalPrice = totalPrice;
+  }
 
   public java.time.LocalDate getStarts() {
     return this.starts;
@@ -250,17 +269,21 @@ public class Notification {
     this.createdAt = createdAt;
   }
 
+
   @Override
   public String toString() {
-    return "{" + " id='" + getId() + "'" + ", receiverId='" + getReceiverId() + "'"
-        + ", receiverName='" + getReceiverName() + "'" + ", senderId='" + getSenderId() + "'"
-        + ", senderName='" + getSenderName() + "'" + ", message='" + getMessage() + "'"
-        + ", toolPicUrl='" + getToolPicUrl() + "'" + ", toolName='" + getToolName() + "'"
-        + ", address='" + getAddress() + "'" + ", notes='" + getNotes() + "'" + ", latitude='"
+    return "{" + " id='" + getId() + "'" + ", receiverId='" + getReceiverId() + "'" + ", toolId='"
+        + getToolId() + "'" + ", receiverName='" + getReceiverName() + "'" + ", senderId='"
+        + getSenderId() + "'" + ", senderName='" + getSenderName() + "'" + ", message='"
+        + getMessage() + "'" + ", toolPicUrl='" + getToolPicUrl() + "'" + ", toolName='"
+        + getToolName() + "'" + ", address='" + getAddress() + "'" + ", notes='" + getNotes() + "'"
+        + ", meeting='" + getMeeting() + "'" + ", totalPrice='" + getTotalPrice() + "'"
+        + ", starts='" + getStarts() + "'" + ", ends='" + getEnds() + "'" + ", latitude='"
         + getLatitude() + "'" + ", longitude='" + getLongitude() + "'" + ", locationRequested='"
         + isLocationRequested() + "'" + ", timeRequested='" + isTimeRequested() + "'" + ", type='"
         + getType() + "'" + ", read='" + isRead() + "'" + ", relatedId='" + getRelatedId() + "'"
         + ", createdAt='" + getCreatedAt() + "'" + "}";
   }
+
 
 }

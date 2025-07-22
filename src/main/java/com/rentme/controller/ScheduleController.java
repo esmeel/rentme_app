@@ -22,6 +22,7 @@ import com.rentme.model.NotificationType;
 import com.rentme.model.Rental;
 import com.rentme.model.ScheduleEntry;
 import com.rentme.model.User;
+import com.rentme.repository.NotificationRepository;
 import com.rentme.repository.RentalRepository;
 import com.rentme.repository.ScheduleEntryRepository;
 import com.rentme.repository.UserRepository;
@@ -37,15 +38,18 @@ public class ScheduleController {
   private final RentalRepository rentalRepository;
   private final UserRepository userRepository;
   private final NotificationService notificationService;
+  private final NotificationRepository notificationRepository;
 
   public ScheduleController(ScheduleService scheduleService,
       ScheduleEntryRepository scheduleEntryRepository, RentalRepository rentalRepository,
-      UserRepository userRepository, NotificationService notificationService) {
+      UserRepository userRepository, NotificationService notificationService,
+      NotificationRepository notificationRepository) {
     this.scheduleService = scheduleService;
     this.scheduleEntryRepository = scheduleEntryRepository;
     this.rentalRepository = rentalRepository;
     this.userRepository = userRepository;
     this.notificationService = notificationService;
+    this.notificationRepository = notificationRepository;
   }
 
   @GetMapping("/receiver/{receiverId}")
@@ -56,7 +60,10 @@ public class ScheduleController {
 
   @PostMapping("/send")
   public ResponseEntity<String> sendSchedule(@RequestBody ScheduleRequestDTO request) {
-    scheduleService.processSchedule(request);
+    Notification notification = notificationRepository
+        .findByTypeAndRelatedId(NotificationType.OWNER_TIME_REQUEST, request.getRentalId()).get(0);
+    scheduleService.processSchedule(request, notification);
+
     notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_REQUEST,
         request.getRentalId());
     return ResponseEntity.ok("Schedule received and saved successfully");
