@@ -41,7 +41,6 @@ public class IdentityRequestController {
   @PostMapping("/identity-requests")
   public ResponseEntity<?> submitIdentityRequest(@RequestBody IdentityRequestDTO dto,
       Principal principal) {
-    System.out.println("📥 Received identity request for: " + dto.getDocumentType());
 
     User user = userRepository.findByEmail(principal.getName());
     if (user == null)
@@ -84,9 +83,7 @@ public class IdentityRequestController {
     if (request.getAdminNote() != null)
       adminNote = request.getAdminNote();
 
-    return ResponseEntity.ok(Map.of(
-        "status", request.getStatus(),
-        "note", request.getAdminNote(),
+    return ResponseEntity.ok(Map.of("status", request.getStatus(), "note", request.getAdminNote(),
         "verified", request.isVerified()));
   }
 

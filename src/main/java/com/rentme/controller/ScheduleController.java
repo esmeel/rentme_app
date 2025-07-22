@@ -82,7 +82,7 @@ public class ScheduleController {
           request.getRentalId());
 
       scheduleService.addSelectedSchedule(request.getScheduleId(), request.getRentalId(),
-          request.getUserId());
+          request.getUserId(), request);
       Rental rental = rentalRepository.findById(request.getRentalId())
           .orElseThrow(() -> new RuntimeException("Rental not found"));
 
@@ -97,7 +97,7 @@ public class ScheduleController {
       }
       // send notification:
       Notification notif = new Notification();
-      notif.setSenderId(selected.getReceiverId());// ?
+      notif.setSenderId(selected.getReceiverId());
       notif.setReceiverId(selected.getSenderId());
       notif.setMessage(sender.getName() + " wants to meet you on " + selected.getDate()
           + " between " + selected.getFromTime() + " and " + selected.getToTime());

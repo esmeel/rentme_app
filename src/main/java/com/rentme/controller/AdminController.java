@@ -1,6 +1,5 @@
 package com.rentme.controller;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.rentme.model.IdentityRequest;
-import com.rentme.model.NotificationType;
 import com.rentme.model.User;
 import com.rentme.repository.IdentityRequestRepository;
 import com.rentme.repository.UserRepository;
@@ -67,14 +65,7 @@ public class AdminController {
                         userRepository.save(user);
                 }
 
-                notificationService.sendNotification(user.getId(),
-                                adminProvider.getAdminUser().getId(), // نظام
-                                NotificationType.SYSTEM,
-                                "✅ Your identity verification request has been approved."
-                                                + (note != null ? "\nNote: " + note : ""),
-                                0L, LocalDate.now(), LocalDate.now(), 0.0, 0L);
-
-                System.out.println("✅ Approval notification sent");
+                notificationService.sendNotification(request);
                 return "redirect:/admin/identity-requests";
         }
 
@@ -92,11 +83,7 @@ public class AdminController {
 
                 User user = request.getUser();
 
-                notificationService.sendNotification(user.getId(),
-                                adminProvider.getAdminUser().getId(), NotificationType.SYSTEM,
-                                "❌ Your identity verification request has been rejected."
-                                                + (note != null ? "\nNote: " + note : ""),
-                                0L);
+                notificationService.sendNotification(request);
 
                 System.out.println("❌ Rejection notification sent");
                 return "redirect:/admin/identity-requests";

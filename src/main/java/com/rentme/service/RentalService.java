@@ -13,11 +13,6 @@ import com.rentme.model.Notification;
 import com.rentme.model.NotificationType;
 import com.rentme.model.Rental;
 import com.rentme.model.RentalStatus;
-import static com.rentme.model.RentalStatus.ACCEPTED;
-import static com.rentme.model.RentalStatus.CANCELLED;
-import static com.rentme.model.RentalStatus.COMPLETED;
-import static com.rentme.model.RentalStatus.IN_PROGRESS;
-import static com.rentme.model.RentalStatus.REJECTED;
 import com.rentme.model.Tool;
 import com.rentme.model.User;
 import com.rentme.repository.NotificationRepository;
@@ -179,29 +174,29 @@ public class RentalService {
     }
 
     // تحديث حالة طلب الاستئجار
-    public Rental updateStatus(Long rentalId, RentalStatus status) {
-        Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
+    // public Rental updateStatus(Long rentalId, RentalStatus status) {
+    // Rental rental = rentalRepository.findById(rentalId)
+    // .orElseThrow(() -> new RuntimeException("Rental not found"));
 
-        rental.setStatus(status);
-        rentalRepository.save(rental);
+    // rental.setStatus(status);
+    // rentalRepository.save(rental);
 
-        // إرسال إشعار للمستأجر حسب الحالة
-        String message;
-        switch (status) {
-            case ACCEPTED -> message = "Your rental request has been accepted.";
-            case REJECTED -> message = "Your rental request has been rejected.";
-            case IN_PROGRESS -> message = "Your rental has started.";
-            case COMPLETED -> message = "Your rental has been completed.";
-            case CANCELLED -> message = "Your rental has been cancelled.";
-            default -> message = "";
-        };
+    // // إرسال إشعار للمستأجر حسب الحالة
+    // String message;
+    // switch (status) {
+    // case ACCEPTED -> message = "Your rental request has been accepted.";
+    // case REJECTED -> message = "Your rental request has been rejected.";
+    // case IN_PROGRESS -> message = "Your rental has started.";
+    // case COMPLETED -> message = "Your rental has been completed.";
+    // case CANCELLED -> message = "Your rental has been cancelled.";
+    // default -> message = "";
+    // };
 
-        if (!message.isEmpty()) {
-            notificationService.sendNotification(rental.getRenterId(), rental.getOwnerId(),
-                    NotificationType.RENTAL_APPROVED, message, rentalId);
-        }
+    // if (!message.isEmpty()) {
+    // notificationService.sendNotification(rental.getRenterId(), rental.getOwnerId(),
+    // NotificationType.RENTAL_APPROVED, message, rentalId);
+    // }
 
-        return rental;
-    }
+    // return rental;
+    // }
 }

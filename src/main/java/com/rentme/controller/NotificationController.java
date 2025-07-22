@@ -120,7 +120,7 @@ public class NotificationController {
   public ResponseEntity<?> requestLocation(@RequestBody LocationOrTimeRequestDTO dto) {
     System.out.println("🔔 Received DTO: " + dto);
 
-    notificationService.sendLocationRequest(dto);
+    notificationService.sendNotification(dto);
 
     notificationService.deleteByTypeAndRental(NotificationType.FINAL_SCHEDULE_CONFIRMED,
         dto.getRentalId());
@@ -133,7 +133,7 @@ public class NotificationController {
   public ResponseEntity<?> requestTime(@RequestBody LocationOrTimeRequestDTO dto) {
     System.out.println("🔔 Received DTO: " + dto);
 
-    notificationService.sendTimeRequest(dto);
+    notificationService.sendNotification(dto);
 
 
     notificationService.deleteByTypeAndRental(NotificationType.RENTAL_APPROVED, dto.getRentalId());

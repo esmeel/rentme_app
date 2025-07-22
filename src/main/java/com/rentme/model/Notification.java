@@ -20,11 +20,8 @@ public class Notification {
   private Long id;
   private Long receiverId;
   private Long toolId;
-
   private String receiverName;
-
   private Long senderId;
-
   private String senderName;
   private String message;
   private String toolPicUrl;
@@ -38,25 +35,16 @@ public class Notification {
   private java.time.LocalDate starts;
   @Column(name = "ends")
   private java.time.LocalDate ends;
-
   Double latitude;
-
   Double longitude;
-
   boolean locationRequested = false;
-
   boolean timeRequested = false;
-
   @Enumerated(EnumType.STRING)
   private NotificationType type;
-
   @Column(name = "is_read")
   private boolean read;
-
   private Long relatedId;
-
   private LocalDateTime createdAt = LocalDateTime.now();
-
 
 
   public Long getToolId() {

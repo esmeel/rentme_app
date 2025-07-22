@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -145,12 +144,12 @@ public class RentalController {
         return ResponseEntity.ok(rental);
     }
 
-    @PutMapping("/{rentalId}/status")
-    public ResponseEntity<Rental> updateRentalStatus(@PathVariable Long rentalId,
-            @RequestParam RentalStatus status) {
-        Rental rental = rentalService.updateStatus(rentalId, status);
-        return ResponseEntity.ok(rental);
-    }
+    // @PutMapping("/{rentalId}/status")
+    // public ResponseEntity<Rental> updateRentalStatus(@PathVariable Long rentalId,
+    // @RequestParam RentalStatus status) {
+    // Rental rental = rentalService.updateStatus(rentalId, status);
+    // return ResponseEntity.ok(rental);
+    // }
 
     @GetMapping("/my-tools-requests")
     public ResponseEntity<?> getRequestsForMyTools(HttpServletRequest request) {
@@ -264,6 +263,8 @@ public class RentalController {
         notification.setEnds(request.getEnds());;
         notification.setToolName(rental.getTool().getName());
         notification.setToolPicUrl(rental.getTool().getImageUrl());
+        notification.setToolId(rental.getTool().getId());
+        notification.setTotalPrice(rental.getTotalPrice());
 
 
         notificationRepository.save(notification);
@@ -298,15 +299,7 @@ public class RentalController {
         Notification n = notificationRepository
                 .findByTypeAndRelatedId(NotificationType.SCHEDULE_PROPOSAL, dto.getRentalId())
                 .get(0);
-        notificationService.sendNotification(entry.getReceiverId(), dto.getUserId(),
-                NotificationType.FINAL_SCHEDULE_CONFIRMED,
-                "You will meet with " + sender.getName() + " at: " + entry.getTimeInfo()
-                        + "\nPlease confirm receiving ONLY when you recewivr the tool, to begin the rental.",
-                entry.getRentalId(), dto.getStarts(), dto.getEnds(), n.getTotalPrice(),
-                n.getToolId());
-
-        notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE,
-                dto.getRentalId());
+        notificationService.sendNotification(dto);
         return ResponseEntity.ok("Meeting confirmed and renter notified.");
     }
 
@@ -331,9 +324,7 @@ public class RentalController {
         // إرسال إشعار للمالك
         User renter = userRepository.findById(rental.getRenterId()).orElse(null);
         if (renter != null) {
-            notificationService.sendNotification(rental.getOwnerId(), renter.getId(),
-                    NotificationType.CONFIRMED_TOOL_RECEIVED, "I have received your tool.",
-                    rental.getId());
+            notificationService.sendNotification(request);
         }
 
         return ResponseEntity.ok("Rental confirmed and notification sent.");

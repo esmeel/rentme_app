@@ -23,6 +23,43 @@ public class Rental {
     private Long renterId;
     private double totalPrice;
 
+    @Enumerated(EnumType.STRING)
+    private RentalStatus status;
+
+    @Column(name = "requested_return_by_renter")
+    private Boolean requestedReturnByRenter;
+
+    @Column(name = "confirmed_returned_by_owner")
+    private boolean confirmedReturnedByOwner = false;
+    private LocalDateTime activatedAt;
+    @ManyToOne
+    @JoinColumn(name = "tool_id")
+    private Tool tool;
+
+    private String toolPic;
+
+    private String toolName;
+
+
+    private String ownerName;
+
+    private String renterName;
+
+    private LocalDate startDate;
+
+
+
+    private LocalDate endDate;
+
+    private String macAddress;
+
+    private boolean accepted;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "requesting_return")
+    private boolean requestingReturn = false;
+
     public double getTotalPrice() {
         return this.totalPrice;
     }
@@ -31,12 +68,6 @@ public class Rental {
         this.totalPrice = totalPrice;
     }
 
-    @Enumerated(EnumType.STRING)
-    private RentalStatus status;
-    @Column(name = "requested_return_by_renter")
-    private Boolean requestedReturnByRenter;
-    @Column(name = "confirmed_returned_by_owner")
-    private boolean confirmedReturnedByOwner = false;
 
     public boolean isConfirmedReturnedByOwner() {
         return this.confirmedReturnedByOwner;
@@ -45,36 +76,6 @@ public class Rental {
     public boolean getConfirmedReturnedByOwner() {
         return this.confirmedReturnedByOwner;
     }
-
-
-    private LocalDateTime activatedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "tool_id")
-    private Tool tool;
-
-    private String toolPic;
-
-
-
-    private String toolName;
-
-    private String ownerName;
-
-    private String renterName;
-
-    private LocalDate startDate;
-
-    private LocalDate endDate;
-
-    private String macAddress;
-
-    private boolean accepted;
-
-
-    private LocalDateTime createdAt = LocalDateTime.now();
-    @Column(name = "requesting_return")
-    private boolean requestingReturn = false;
 
     public boolean isRequestedReturnByRenter() {
         return requestedReturnByRenter;

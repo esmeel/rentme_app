@@ -6,7 +6,7 @@ public class IdentityRequestDTO {
   private Long id;
   private String name;
   private String documentType;
-  private List<String> imageUrls; // URLs for the uploaded images
+  private List<String> imageUrls;
   private String status;
 
   // Getters and Setters

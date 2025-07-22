@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.rentme.data_transfer_objects.ScheduleConfirmationRequest;
 import com.rentme.data_transfer_objects.ScheduleEntryDTO;
 import com.rentme.data_transfer_objects.ScheduleRequestDTO;
 import com.rentme.model.Notification;
@@ -50,16 +51,12 @@ public class ScheduleService {
       entry.setRentalId(request.getRentalId());
       entry.setRelatedId(request.getRelatedId());
       entry.setNotes(request.getNotes());
-      entry.setConfirmed(false); // initially not confirmed
+      entry.setConfirmed(false);
       entriesToSave.add(entry);
     }
 
     scheduleEntryRepository.saveAll(entriesToSave);
-    // إرسال إشعار للمستأجر بأن المالك اقترح جداول مواعيد
-    notificationService.sendNotification(receiver.getId(), sender.getId(),
-        NotificationType.SCHEDULE_PROPOSAL, "You have received proposed schedule times.",
-        request.getRentalId(), request.getStarts(), request.getEnds(), notifi.getTotalPrice(),
-        notifi.getToolId());
+    notificationService.sendNotification(request);
   }
 
   public List<ScheduleEntry> getByRentalId(Long rentalId) {
@@ -77,7 +74,8 @@ public class ScheduleService {
    * تابع تأكيد خيار الموعد الذي اختاره المستأجر. يتم تعيين الخيار المختار كـ confirmed، وقد نرغب
    * أيضًا بإلغاء التأكيد عن الخيارات الأخرى.
    */
-  public void addSelectedSchedule(Long scheduleId, Long rentalId, Long userId) {
+  public void addSelectedSchedule(Long scheduleId, Long rentalId, Long userId,
+      ScheduleConfirmationRequest request) {
     ScheduleEntry selected = scheduleEntryRepository.findById(scheduleId)
         .orElseThrow(() -> new RuntimeException("Schedule entry not found"));
 
@@ -99,9 +97,10 @@ public class ScheduleService {
       }
     }
     scheduleEntryRepository.saveAll(otherEntries);
+    notificationService.sendNotification(request);
+    // notificationService.sendNotification(selected.getSenderId(), userId,
+    // NotificationType.OWNER_TIME_RESPONSE, "The renter selected a schedule time.", rentalId);
 
-    notificationService.sendNotification(selected.getSenderId(), userId,
-        NotificationType.OWNER_TIME_RESPONSE, "The renter selected a schedule time.", rentalId);
     notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE, rentalId);
   }
 }
