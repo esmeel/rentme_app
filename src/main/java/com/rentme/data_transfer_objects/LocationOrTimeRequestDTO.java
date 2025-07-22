@@ -6,6 +6,22 @@ public class LocationOrTimeRequestDTO {
   private Long receiverId;
   private String senderNamne;
   private String receiverName;
+  private String nofitiType;
+
+  public String getNofitiType() {
+    return this.nofitiType;
+  }
+
+  public void setNofitiType(String nofitiType) {
+    this.nofitiType = nofitiType;
+  }
+
+  private String toolPicUrl;
+
+  private String meeting;
+
+  private java.time.LocalDate starts;
+  private java.time.LocalDate ends;
 
   public String getReceiverName() {
     return this.receiverName;
@@ -14,12 +30,6 @@ public class LocationOrTimeRequestDTO {
   public void setReceiverName(String receiverName) {
     this.receiverName = receiverName;
   }
-
-  private String toolPicUrl;
-  private String meeting;
-
-  private java.time.LocalDate starts;
-  private java.time.LocalDate ends;
 
   public java.time.LocalDate getStarts() {
     return this.starts;

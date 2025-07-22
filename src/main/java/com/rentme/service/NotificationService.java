@@ -26,6 +26,7 @@ import com.rentme.model.User;
 import com.rentme.repository.NotificationRepository;
 import com.rentme.repository.RentalRepository;
 import com.rentme.repository.UserRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class NotificationService {
@@ -44,7 +45,7 @@ public class NotificationService {
   }
 
 
-
+  // @Transactional
   public void sendNotification(Object dto) {
 
     if (dto instanceof ConfirmReceivedDTO confirmReceivedDTO)
@@ -74,14 +75,14 @@ public class NotificationService {
     if (dto instanceof ReportRequestDTO reportRequestDTO)
       hundelReportRequestDTONotif(reportRequestDTO);
 
-    if (dto instanceof ReturnToolRequestDTO returnToolRequestDTO)
-      hundelReturnToolRequestNotif(returnToolRequestDTO);
+    // if (dto instanceof ReturnToolRequestDTO returnToolRequestDTO)
+    // hundelReturnToolRequestNotif(returnToolRequestDTO);
 
     if (dto instanceof ScheduleConfirmationRequest scheduleConfirmationRequest)
       hundelScheduleConfirmationRequestNotif(scheduleConfirmationRequest);
 
-    if (dto instanceof ScheduleEntryDTO scheduleEntryDTO)
-      hundelScheduleEntryNotif(scheduleEntryDTO);
+    // if (dto instanceof ScheduleEntryDTO scheduleEntryDTO)
+    // hundelScheduleEntryNotif(scheduleEntryDTO);
 
     if (dto instanceof ScheduleRequestDTO scheduleRequestDTO)
       hundelScheduleRequestNotif(scheduleRequestDTO);
@@ -102,36 +103,33 @@ public class NotificationService {
   private void hundelIdentityRequestDTONotif(IdentityRequestDTO identityRequestDTO) {
 
     // No need to implement this method as per the current context
-    throw new UnsupportedOperationException("Unimplemented method 'hundelIdentityRequestDTONotif'");
   }
 
   private void hundelUserResponseNotif(UserResponseDTO userResponseDTO) {
 
     // No need to implement this method as per the current context
 
-    throw new UnsupportedOperationException("Unimplemented method 'hundelUserResponseNotif'");
   }
 
   private void hundelToolResponseNotif(ToolResponseDTO toolResponseDTO) {
 
 
-    throw new UnsupportedOperationException("Unimplemented method 'hundelToolResponseNotif'");
   }
 
   private void hundelScheduleRequestNotif(ScheduleRequestDTO scheduleRequestDTO) {
     Notification prevNotification =
         notificationRepository.findByTypeAndRelatedId(NotificationType.OWNER_TIME_REQUEST,
-            scheduleRequestDTO.getRentalId()).stream().findFirst().orElse(null);
+            scheduleRequestDTO.getRentalId()).get(0);
     if (prevNotification == null) {
       throw new RuntimeException("Previous notification not found");
     }
     Notification notification = new Notification();
     notification.setType(NotificationType.SCHEDULE_PROPOSAL);
-    notification.setSenderId(scheduleRequestDTO.getReceiverId());
-    notification.setReceiverId(scheduleRequestDTO.getSenderId());
+    notification.setSenderId(prevNotification.getReceiverId());
+    notification.setReceiverId(prevNotification.getSenderId());
     notification
         .setMessage("You have a new schedule proposal from " + prevNotification.getSenderName());
-    notification.setRelatedId(scheduleRequestDTO.getRentalId());
+    notification.setRelatedId(prevNotification.getRelatedId());
     notification.setCreatedAt(java.time.LocalDateTime.now());
     notification.setIsRead(false);
     notification.setToolId(prevNotification != null ? prevNotification.getToolId() : -1);
@@ -139,8 +137,8 @@ public class NotificationService {
     notification.setToolName(prevNotification != null ? prevNotification.getToolName() : "");
     notification.setAddress(prevNotification != null ? prevNotification.getAddress() : "");
     notification.setNotes(prevNotification != null ? prevNotification.getNotes() : "");
-    notification.setSenderName(prevNotification.getSenderName());
-    notification.setReceiverName(prevNotification.getReceiverName());
+    notification.setSenderName(prevNotification.getReceiverName());
+    notification.setReceiverName(prevNotification.getSenderName());
     notification.setStarts(prevNotification.getStarts());
     notification.setEnds(prevNotification.getEnds());
     notification.setTotalPrice(prevNotification.getTotalPrice());
@@ -148,70 +146,248 @@ public class NotificationService {
 
     // Delete the previous notification
     if (prevNotification != null)
-      notificationRepository.deleteByTypeAndRelatedId(prevNotification.getType(),
-          scheduleRequestDTO.getRentalId());
+      notificationRepository.delete(prevNotification);
 
   }
 
-  private void hundelScheduleEntryNotif(ScheduleEntryDTO scheduleEntryDTO) {
+  /*
+   * private void hundelScheduleEntryNotif(ScheduleEntryDTO dto) { Notification prev =
+   * notificationRepository .findByTypeAndRelatedId(NotificationType.SCHEDULE_PROPOSAL,
+   * prev.getRelatedId()).get(0); if (prev == null) throw new
+   * RuntimeException("Previous notification not found");
+   *
+   * Notification n = new Notification(); n.setType(NotificationType.SCHEDULE_CONFIRMED);
+   * n.setSenderId(prev.getReceiverId()); n.setReceiverId(prev.getSenderId());
+   * n.setSenderName(prev.getSenderName()); n.setReceiverName(prev.getReceiverName());
+   * n.setMessage("Schedule confirmed by " + prev.getSenderName()); n.setToolId(prev.getToolId());
+   * n.setToolName(prev.getToolName()); n.setToolPicUrl(prev.getToolPicUrl());
+   * n.setAddress(prev.getAddress()); n.setNotes(prev.getNotes()); n.setStarts(prev.getStarts());
+   * n.setEnds(prev.getEnds()); n.setTotalPrice(prev.getTotalPrice());
+   * n.setRelatedId(prev.getRelatedId()); n.setCreatedAt(java.time.LocalDateTime.now());
+   * n.setIsRead(false); n.setTimeRequested(true); notificationRepository.save(n);
+   * notificationRepository.deleteByTypeAndRelatedId(NotificationType.SCHEDULE_PROPOSAL,
+   * prev.getRelatedId()); }
+   *
+   */
 
-    throw new UnsupportedOperationException("Unimplemented method 'hundelScheduleEntryNotif'");
+
+  private void hundelScheduleConfirmationRequestNotif(ScheduleConfirmationRequest dto) {
+    Notification prev = notificationRepository
+        .findByTypeAndRelatedId(NotificationType.SCHEDULE_PROPOSAL, dto.getRentalId()).stream()
+        .findFirst().orElse(null);
+    if (prev == null)
+      throw new RuntimeException("Previous notification not found");
+
+    Notification n = new Notification();
+    n.setType(NotificationType.OWNER_TIME_RESPONSE);
+    n.setSenderId(dto.getReceiverId());
+    n.setReceiverId(prev.getSenderId());
+    n.setSenderName(prev.getReceiverName());
+    n.setReceiverName(prev.getSenderName());
+    n.setMessage("Schedule confirmed by " + prev.getSenderName());
+    n.setToolId(prev.getToolId());
+    n.setToolName(prev.getToolName());
+    n.setToolPicUrl(prev.getToolPicUrl());
+    n.setAddress(prev.getAddress());
+    n.setNotes(prev.getNotes());
+    n.setStarts(prev.getStarts());
+    n.setEnds(prev.getEnds());
+    n.setTotalPrice(prev.getTotalPrice());
+    n.setRelatedId(dto.getRentalId());
+    n.setCreatedAt(java.time.LocalDateTime.now());
+    n.setIsRead(false);
+    notificationRepository.save(n);
+    notificationRepository.delete(prev);
   }
 
-  private void hundelScheduleConfirmationRequestNotif(
-      ScheduleConfirmationRequest rcheduleConfirmationRequest) {
 
-    throw new UnsupportedOperationException(
-        "Unimplemented method 'hundelScheduleConfirmationRequestNotif'");
-  }
 
-  private void hundelReturnToolRequestNotif(ReturnToolRequestDTO returnToolRequestDTO) {
-
-    throw new UnsupportedOperationException("Unimplemented method 'hundelReturnToolRequestNotif'");
-  }
-
+  /*
+   * private void hundelReturnToolRequestNotif(ReturnToolRequestDTO dto) { Notification prev =
+   * notificationRepository .findByTypeAndRelatedId(NotificationType.RENTAL_STARTED,
+   * dto.getRentalId()).stream() .findFirst().orElse(null); if (prev == null) throw new
+   * RuntimeException("Previous notification not found");
+   *
+   * Notification n = new Notification(); n.setType(NotificationType.RETURN_REQUEST);
+   * n.setSenderId(dto.getSenderId()); n.setReceiverId(dto.getReceiverId());
+   * n.setSenderName(prev.getSenderName()); n.setReceiverName(prev.getReceiverName());
+   * n.setMessage("Return request sent by " + prev.getSenderName()); n.setToolId(prev.getToolId());
+   * n.setToolName(prev.getToolName()); n.setToolPicUrl(prev.getToolPicUrl());
+   * n.setAddress(prev.getAddress()); n.setLatitude(prev.getLatitude());
+   * n.setLongitude(prev.getLongitude()); n.setNotes(prev.getNotes());
+   * n.setStarts(prev.getStarts()); n.setEnds(prev.getEnds());
+   * n.setTotalPrice(prev.getTotalPrice()); n.setRelatedId(dto.getRentalId());
+   * n.setCreatedAt(java.time.LocalDateTime.now()); n.setIsRead(false);
+   * notificationRepository.save(n);
+   * notificationRepository.deleteByTypeAndRelatedId(NotificationType.RENTAL_STARTED,
+   * prev.getRelatedId()); }
+   *
+   *
+   */
   private void hundelReportRequestDTONotif(ReportRequestDTO reportRequestDTO) {
 
-    throw new UnsupportedOperationException("Unimplemented method 'hundelReportRequestDTONotif'");
+
   }
 
   private void hundelRentalResponseRequestNotif(RentalResponseRequest rentalResponseRequest) {
 
-    throw new UnsupportedOperationException(
-        "Unimplemented method 'hundelRentalResponseRequestNotif'");
   }
 
   private void hundelRentalResponseNotif(RentalResponseDTO rentalResponseDTO) {
 
-    throw new UnsupportedOperationException("Unimplemented method 'hundelRentalResponseNotif'");
   }
 
   private void hundelrentalRequestNotif(RentalRequest rentalRequest) {
 
-    throw new UnsupportedOperationException("Unimplemented method 'hundelrentalRequestNotif'");
   }
 
-  private void hundelMeetingConfirmationNotif(MeetingConfirmationDTO meetingConfirmationDTO) {
+  private void hundelMeetingConfirmationNotif(MeetingConfirmationDTO dto) {
+    Notification prev = notificationRepository
+        .findByTypeAndRelatedId(NotificationType.SCHEDULE_PROPOSAL, dto.getRentalId()).stream()
+        .findFirst().orElse(null);
+    if (prev == null)
+      throw new RuntimeException("Previous notification not found");
 
-    throw new UnsupportedOperationException(
-        "Unimplemented method 'hundelMeetingConfirmationNotif'");
+    Notification n = new Notification();
+    n.setType(NotificationType.FINAL_SCHEDULE_CONFIRMED);
+    n.setSenderId(prev.getReceiverId());
+    n.setReceiverId(prev.getSenderId());
+    n.setSenderName(prev.getSenderName());
+    n.setReceiverName(prev.getReceiverName());
+    n.setMessage("Meeting confirmed by " + prev.getSenderName());
+    n.setToolId(prev.getToolId());
+    n.setToolName(prev.getToolName());
+    n.setToolPicUrl(prev.getToolPicUrl());
+    n.setAddress(prev.getAddress());
+    n.setNotes(prev.getNotes());
+    n.setStarts(prev.getStarts());
+    n.setEnds(prev.getEnds());
+    n.setTotalPrice(prev.getTotalPrice());
+    n.setRelatedId(dto.getRentalId());
+    n.setCreatedAt(java.time.LocalDateTime.now());
+    n.setIsRead(false);
+    notificationRepository.save(n);
+    notificationRepository.deleteByTypeAndRelatedId(prev.getType(), prev.getRelatedId());
   }
+
 
   private void hundelLocationSendRequestNotif(LocationSendRequestDTO dto) {
+    Notification prev = notificationRepository
+        .findByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST, dto.getRentalId()).stream()
+        .findFirst().orElse(null);
+    if (prev == null)
+      throw new RuntimeException("Previous notification not found");
 
-    throw new UnsupportedOperationException(
-        "Unimplemented method 'hundelLocationSendRequestNotif'");
+    Notification n = new Notification();
+    n.setType(NotificationType.LOCATION_SENT);
+    n.setSenderId(dto.getReceiverId());
+    n.setReceiverId(dto.getSenderId());
+    n.setSenderName(prev.getSenderName());
+    n.setReceiverName(prev.getReceiverName());
+    n.setMessage("Location sent by " + prev.getSenderName());
+    n.setToolId(prev.getToolId());
+    n.setToolName(prev.getToolName());
+    n.setToolPicUrl(prev.getToolPicUrl());
+    n.setAddress(dto.getAddress());
+    n.setLatitude(dto.getLatitude());
+    n.setLongitude(dto.getLongitude());
+    n.setNotes(prev.getNotes());
+    n.setStarts(prev.getStarts());
+    n.setEnds(prev.getEnds());
+    n.setTotalPrice(prev.getTotalPrice());
+    n.setRelatedId(dto.getRentalId());
+    n.setCreatedAt(java.time.LocalDateTime.now());
+    n.setIsRead(false);
+    notificationRepository.save(n);
+    notificationRepository.deleteByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST,
+        prev.getRelatedId());
+
   }
 
   private void hundelConfirmReceivedNotif(ConfirmReceivedDTO dto) {
+    Notification prev = notificationRepository
+        .findByTypeAndRelatedId(NotificationType.LOCATION_SENT, dto.getRentalId()).stream()
+        .findFirst().orElse(null);
+    if (prev == null)
+      throw new RuntimeException("Previous notification not found");
 
-    throw new UnsupportedOperationException("Not supported yet.");
+    Notification n = new Notification();
+    n.setType(NotificationType.TOOL_RECEIVED);
+    n.setSenderId(prev.getReceiverId());
+    n.setReceiverId(prev.getSenderId());
+    n.setSenderName(prev.getSenderName());
+    n.setReceiverName(prev.getReceiverName());
+    n.setMessage("Tool received confirmed by " + prev.getSenderName());
+    n.setToolId(prev.getToolId());
+    n.setToolName(prev.getToolName());
+    n.setToolPicUrl(prev.getToolPicUrl());
+    n.setAddress(prev.getAddress());
+    n.setNotes(prev.getNotes());
+    n.setStarts(prev.getStarts());
+    n.setEnds(prev.getEnds());
+    n.setTotalPrice(prev.getTotalPrice());
+    n.setRelatedId(dto.getRentalId());
+    n.setCreatedAt(java.time.LocalDateTime.now());
+    n.setIsRead(false);
+    notificationRepository.save(n);
+    notificationRepository.deleteByTypeAndRelatedId(prev.getType(), prev.getRelatedId());
   }
 
   private void hundelLocationOrTimeRequesNotif(LocationOrTimeRequestDTO dto) {
+    NotificationType type = dto.getNofitiType().equals("OWNER_LOCATION_REQUEST")
+        ? NotificationType.OWNER_LOCATION_REQUEST
+        : NotificationType.OWNER_TIME_REQUEST;
+    Notification prev = notificationRepository
+        .findByTypeAndRelatedId(NotificationType.RENTAL_APPROVED, dto.getRentalId()).stream()
+        .findFirst().orElse(null);
+    if (prev == null)
+      throw new RuntimeException("Previous notification not found");
 
-    throw new UnsupportedOperationException("Not supported yet.");
+    Notification n = new Notification();
+    n.setType(type);
+    n.setSenderId(dto.getSenderId());
+    n.setReceiverId(dto.getReceiverId());
+    n.setSenderName(prev.getSenderName());
+    n.setReceiverName(prev.getReceiverName());
+    n.setMessage(type == NotificationType.OWNER_LOCATION_REQUEST
+        ? prev.getSenderName() + " is Requesting your location"
+        : prev.getSenderName() + " is Requesting your time");
+    n.setToolId(prev.getToolId());
+    n.setToolName(prev.getToolName());
+    n.setToolPicUrl(prev.getToolPicUrl());
+    n.setAddress(prev.getAddress());
+    n.setNotes(prev.getNotes());
+    n.setStarts(prev.getStarts());
+    n.setEnds(prev.getEnds());
+    n.setTotalPrice(prev.getTotalPrice());
+    n.setRelatedId(dto.getRentalId());
+    n.setCreatedAt(java.time.LocalDateTime.now());
+    n.setIsRead(false);
+    notificationRepository.delete(prev);
+    notificationRepository.save(n);
   }
+
+  // /*
+  // * private void hundelLocationOrTimeRequesNotif(LocationOrTimeRequestDTO dto) { NotificationType
+  // * type = dto.isLocation() ? NotificationType.OWNER_LOCATION_REQUEST :
+  // * NotificationType.OWNER_TIME_REQUEST;
+  // *
+  // * Notification prev = notificationRepository
+  // * .findByTypeAndRelatedId(NotificationType.RENTAL_APPROVED, dto.getRentalId()).stream()
+  // * .findFirst().orElse(null); if (prev == null) throw new
+  // * RuntimeException("Previous notification not found");
+  // *
+  // * Notification n = new Notification(); n.setType(type); n.setSenderId(dto.getSenderId());
+  // * n.setReceiverId(dto.getReceiverId()); n.setSenderName(prev.getSenderName());
+  // * n.setReceiverName(prev.getReceiverName()); n.setMessage((dto.isLocation() ?
+  // * "Requesting location from " : "Requesting time from ") + prev.getReceiverName());
+  // * n.setToolId(prev.getToolId()); n.setToolName(prev.getToolName());
+  // * n.setToolPicUrl(prev.getToolPicUrl()); n.setAddress(prev.getAddress());
+  // * n.setNotes(prev.getNotes()); n.setStarts(prev.getStarts()); n.setEnds(prev.getEnds());
+  // * n.setTotalPrice(prev.getTotalPrice()); n.setRelatedId(dto.getRentalId());
+  // * n.setCreatedAt(java.time.LocalDateTime.now()); n.setIsRead(false);
+  // * notificationRepository.save(n); }
+  // */
 
   public void deleteByTypeAndRental(NotificationType type, Long rentalId) {
     List<Notification> notifs = notificationRepository.findByTypeAndRelatedId(type, rentalId);

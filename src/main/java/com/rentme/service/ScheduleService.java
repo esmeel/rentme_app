@@ -31,7 +31,7 @@ public class ScheduleService {
     this.notificationService = notificationService;
   }
 
-  public void processSchedule(ScheduleRequestDTO request, Notification notifi) {
+  public void processSchedule(ScheduleRequestDTO request) {
     User sender = userRepository.findById(request.getSenderId()).orElse(null);
     User receiver = userRepository.findById(request.getReceiverId()).orElse(null);
 
@@ -46,8 +46,8 @@ public class ScheduleService {
       entry.setDate(dto.getDate());
       entry.setFromTime(dto.getFrom());
       entry.setToTime(dto.getTo());
-      entry.setSenderId(sender.getId());
-      entry.setReceiverId(receiver.getId());
+      entry.setSenderId(receiver.getId());
+      entry.setReceiverId(sender.getId());
       entry.setRentalId(request.getRentalId());
       entry.setRelatedId(request.getRelatedId());
       entry.setNotes(request.getNotes());

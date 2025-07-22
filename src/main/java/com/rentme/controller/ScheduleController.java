@@ -60,12 +60,9 @@ public class ScheduleController {
 
   @PostMapping("/send")
   public ResponseEntity<String> sendSchedule(@RequestBody ScheduleRequestDTO request) {
-    Notification notification = notificationRepository
-        .findByTypeAndRelatedId(NotificationType.OWNER_TIME_REQUEST, request.getRentalId()).get(0);
-    scheduleService.processSchedule(request, notification);
 
-    notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_REQUEST,
-        request.getRentalId());
+    scheduleService.processSchedule(request);
+
     return ResponseEntity.ok("Schedule received and saved successfully");
   }
 
@@ -96,23 +93,6 @@ public class ScheduleController {
         throw new RuntimeException("Rental ID mismatch");
       }
       // send notification:
-      Notification notif = new Notification();
-      notif.setSenderId(selected.getReceiverId());
-      notif.setReceiverId(selected.getSenderId());
-      notif.setMessage(sender.getName() + " wants to meet you on " + selected.getDate()
-          + " between " + selected.getFromTime() + " and " + selected.getToTime());
-
-      notif.setType(NotificationType.OWNER_TIME_RESPONSE);
-      notif.setRelatedId(selected.getRentalId());
-      notif.setCreatedAt(LocalDateTime.now());
-      notif.setIsRead(false);
-      notif.setStarts(request.getStarts());
-      notif.setEnds(request.getEnds());
-      notif.setToolPicUrl(rental.getTool().getImageUrl());
-      notif.setSenderName(sender.getName());
-      notif.setReceiverName(owner.getName());
-      notif.setToolName(rental.getTool().getName());
-      notificationService.sendNotification(notif);
 
 
 
