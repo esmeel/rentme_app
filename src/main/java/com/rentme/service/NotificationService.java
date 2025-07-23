@@ -306,7 +306,7 @@ public class NotificationService {
     n.setToolName(prev.getToolName());
     n.setToolPicUrl(prev.getToolPicUrl());
     n.setAddress(dto.getAddress());
-    n.setLatitude(dto.getLatitude())
+    n.setLatitude(dto.getLatitude());
     n.setLongitude(dto.getLongitude());
     n.setNotes(prev.getNotes());
     n.setStarts(prev.getStarts());
