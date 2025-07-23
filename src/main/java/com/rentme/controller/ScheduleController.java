@@ -111,15 +111,11 @@ public class ScheduleController {
     // Reject all other proposals for same rental
     scheduleEntryRepository.deleteByRentalIdAndIdNot(entry.getRentalId(), entry.getId());
 
-    // Get rental info
-    Rental rental = rentalRepository.findById(entry.getRentalId())
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rental not found"));
 
     // Get users
     User sender = userRepository.findById(entry.getSenderId())
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sender not found"));
-    User receiver = userRepository.findById(entry.getReceiverId())
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver not found"));
+
 
     // Compose message
     String dateTime = entry.getDate() + " " + entry.getFromTime(); // Customize formatting as needed

@@ -317,10 +317,10 @@ public class RentalController {
         rentalRepository.save(rental);
 
         // إرسال إشعار للمالك
-        User renter = userRepository.findById(rental.getRenterId()).orElse(null);
-        if (renter != null) {
-            notificationService.sendNotification(request);
-        }
+
+        notificationService.sendNotification(request);
+
+
 
         return ResponseEntity.ok("Rental confirmed and notification sent.");
     }

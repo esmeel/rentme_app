@@ -266,9 +266,9 @@ public class NotificationService {
     n.setReceiverId(prev.getSenderId());
     n.setSenderName(prev.getSenderName());
     n.setReceiverName(prev.getReceiverName());
-    n.setMessage("You will meet " + prev.getSenderName() + " at " + dto.getMeetingDate()
-        + ", between " + dto.getMeetingHourFrom() + " and " + dto.getMeetingHourTo() + ".\n"
-        + prev.getNotes());
+    n.setMessage(
+        "You will meet " + prev.getSenderName() + " at " + dto.getMeetingDate() + ", between "
+            + dto.getMeetingHourFrom() + " and " + dto.getMeetingHourTo() + ".\n" + dto.getNotes());
     n.setToolId(prev.getToolId());
     n.setFinalMeetingDate(dto.getMeetingDate());
     n.setFinalMeetingToHour(dto.getMeetingHourTo());
@@ -276,13 +276,16 @@ public class NotificationService {
     n.setToolName(prev.getToolName());
     n.setToolPicUrl(prev.getToolPicUrl());
     n.setAddress(prev.getAddress());
-    n.setNotes(prev.getNotes());
+    n.setNotes(dto.getNotes());
     n.setStarts(prev.getStarts());
     n.setEnds(prev.getEnds());
     n.setTotalPrice(prev.getTotalPrice());
     n.setRelatedId(dto.getRentalId());
     n.setCreatedAt(java.time.LocalDateTime.now());
     n.setIsRead(false);
+    n.setFinalMeetingDate(dto.getMeetingDate());
+    n.setFinalMeetingFromHour(dto.getMeetingHourFrom());
+    n.setFinalMeetingToHour(dto.getMeetingHourTo());
     notificationRepository.save(n);
     notificationRepository.deleteByTypeAndRelatedId(prev.getType(), prev.getRelatedId());
   }
@@ -297,8 +300,8 @@ public class NotificationService {
 
     Notification n = new Notification();
     n.setType(NotificationType.LOCATION_SENT);
-    n.setSenderId(dto.getReceiverId());
-    n.setReceiverId(dto.getSenderId());
+    n.setSenderId(prev.getReceiverId());
+    n.setReceiverId(prev.getSenderId());
     n.setSenderName(prev.getSenderName());
     n.setReceiverName(prev.getReceiverName());
     n.setMessage("Location sent by " + prev.getSenderName());
@@ -315,6 +318,12 @@ public class NotificationService {
     n.setRelatedId(dto.getRentalId());
     n.setCreatedAt(java.time.LocalDateTime.now());
     n.setIsRead(false);
+    n.setFinalMeetingDate(prev.getFinalMeetingDate());
+    n.setFinalMeetingFromHour(prev.getFinalMeetingFromHour());
+    n.setFinalMeetingToHour(prev.getFinalMeetingToHour());
+
+
+
     notificationRepository.save(n);
     notificationRepository.deleteByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST,
         prev.getRelatedId());
@@ -347,7 +356,9 @@ public class NotificationService {
     n.setCreatedAt(java.time.LocalDateTime.now());
     n.setIsRead(false);
     notificationRepository.save(n);
-    notificationRepository.deleteByTypeAndRelatedId(prev.getType(), prev.getRelatedId());
+    n.setFinalMeetingDate(prev.getFinalMeetingDate());
+    n.setFinalMeetingFromHour(prev.getFinalMeetingFromHour());
+    n.setFinalMeetingToHour(prev.getFinalMeetingToHour());
   }
 
   private void hundelLocationOrTimeRequesNotif(LocationOrTimeRequestDTO dto) {
@@ -390,6 +401,9 @@ public class NotificationService {
     n.setRelatedId(dto.getRentalId());
     n.setCreatedAt(java.time.LocalDateTime.now());
     n.setIsRead(false);
+    n.setFinalMeetingDate(prev.getFinalMeetingDate());
+    n.setFinalMeetingFromHour(prev.getFinalMeetingFromHour());
+    n.setFinalMeetingToHour(prev.getFinalMeetingToHour());
     notificationRepository.delete(prev);
     notificationRepository.save(n);
   }

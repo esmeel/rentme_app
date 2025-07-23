@@ -13,7 +13,7 @@ public class MeetingConfirmationDTO {
 
   private String meetingHourTo;
 
-  private java.time.LocalDate notes;
+  private String notes = "";
 
   public MeetingConfirmationDTO() {}
 
@@ -46,11 +46,11 @@ public class MeetingConfirmationDTO {
     this.meetingHourTo = meetingHourTo;
   }
 
-  public java.time.LocalDate getNotes() {
+  public String getNotes() {
     return this.notes;
   }
 
-  public void setNotes(java.time.LocalDate notes) {
+  public void setNotes(String notes) {
     this.notes = notes;
   }
 

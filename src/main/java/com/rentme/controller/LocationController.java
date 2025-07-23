@@ -15,7 +15,7 @@ import com.rentme.model.NotificationType;
 import com.rentme.model.User;
 import com.rentme.repository.NotificationRepository;
 import com.rentme.repository.UserRepository;
-
+import com.rentme.service.NotificationService;
 import jakarta.transaction.Transactional;
 
 @RestController
@@ -23,7 +23,7 @@ import jakarta.transaction.Transactional;
 public class LocationController {
 
   @Autowired
-  private NotificationRepository notificationRepository;
+  private NotificationService notificationService;
 
   @Autowired
   private UserRepository userRepository;
@@ -32,43 +32,32 @@ public class LocationController {
   @Transactional
   public ResponseEntity<?> sendLocation(@RequestBody LocationSendRequestDTO dto) {
     User sender = userRepository.findById(dto.getSenderId()).orElse(null);
-    User receiver = userRepository.findById(dto.getReceiverId()).orElse(null);
 
-    if (sender == null || receiver == null) {
+    if (sender == null)
       return ResponseEntity.badRequest().body("Invalid user IDs.");
-    }
+
     if (dto.getIsDefault()) {
       sender.setDefaultLatitude(dto.getLatitude());
       sender.setDefaultLongitude(dto.getLongitude());
       sender.setDefaultAddress(dto.getAddress());
       userRepository.save(sender);
     }
-    String message = sender.getName() + " sent a pickup location:\n" + dto.getAddress();
-    System.out.println("meeting at LOCATION_SENT" + dto.getMeeting());
-    Notification notif = new Notification();
-    notif.setSenderId(dto.getSenderId());
-    notif.setReceiverId(dto.getReceiverId());
-    notif.setMessage(message);
-    notif.setType(NotificationType.LOCATION_SENT);
-    notif.setRelatedId(dto.getRentalId());
-    notif.setCreatedAt(LocalDateTime.now());
-    notif.setIsRead(false);
-    notif.setLatitude(dto.getLatitude());
-    notif.setLongitude(dto.getLongitude());
-    notif.setAddress(dto.getAddress());
-    notif.setSenderName(sender.getName());
-    notif.setReceiverName(receiver.getName());
-    notif.setToolPicUrl(message);
-    notif.setNotes(dto.getNotes());
-    notif.setMeeting(dto.getMeeting());
-    notif.setStarts(dto.getStarts());
-    notif.setEnds(dto.getEnds());
-    notif.setToolPicUrl(dto.getToolPic());
-    notif.setToolName(dto.getToolName());
-    notificationRepository.save(notif);
-    System.out.println("will delete notification with rental id = " + dto.getRentalId());
-    notificationRepository.deleteByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST,
-        dto.getRentalId());
+
+    /*
+     * Notification notif = new Notification(); notif.setSenderId(dto.getSenderId());
+     * notif.setReceiverId(dto.getReceiverId()); notif.setMessage(message);
+     * notif.setType(NotificationType.LOCATION_SENT); notif.setRelatedId(dto.getRentalId());
+     * notif.setCreatedAt(LocalDateTime.now()); notif.setIsRead(false);
+     * notif.setLatitude(dto.getLatitude()); notif.setLongitude(dto.getLongitude());
+     * notif.setAddress(dto.getAddress()); notif.setSenderName(sender.getName());
+     * notif.setReceiverName(receiver.getName()); notif.setToolPicUrl(message);
+     * notif.setNotes(dto.getNotes()); notif.setMeeting(dto.getMeeting());
+     * notif.setStarts(dto.getStarts()); notif.setEnds(dto.getEnds());
+     * notif.setToolPicUrl(dto.getToolPic()); notif.setToolName(dto.getToolName());
+     * notificationRepository.save(notif);
+     */
+
+    notificationService.sendNotification(dto);
 
     return ResponseEntity.ok("Location sent.");
   }

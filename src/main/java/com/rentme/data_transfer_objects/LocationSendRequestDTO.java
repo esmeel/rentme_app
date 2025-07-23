@@ -2,7 +2,6 @@ package com.rentme.data_transfer_objects;
 
 public class LocationSendRequestDTO {
   private Long senderId;
-  private Long receiverId;
   private Long rentalId;
 
   private double latitude;
@@ -86,13 +85,6 @@ public class LocationSendRequestDTO {
     this.senderId = senderId;
   }
 
-  public Long getReceiverId() {
-    return this.receiverId;
-  }
-
-  public void setReceiverId(Long receiverId) {
-    this.receiverId = receiverId;
-  }
 
   public double getLatitude() {
     return this.latitude;
