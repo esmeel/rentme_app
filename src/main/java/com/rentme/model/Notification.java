@@ -45,6 +45,35 @@ public class Notification {
   private boolean read;
   private Long relatedId;
   private LocalDateTime createdAt = LocalDateTime.now();
+  private String finalMeetingDate;
+  private String finalMeetingFromHour;
+  private String finalMeetingToHour;
+
+
+
+  public String getFinalMeetingDate() {
+    return this.finalMeetingDate;
+  }
+
+  public void setFinalMeetingDate(String finalMeetingDate) {
+    this.finalMeetingDate = finalMeetingDate;
+  }
+
+  public String getFinalMeetingFromHour() {
+    return this.finalMeetingFromHour;
+  }
+
+  public void setFinalMeetingFromHour(String finalMeetingFromHour) {
+    this.finalMeetingFromHour = finalMeetingFromHour;
+  }
+
+  public String getFinalMeetingToHour() {
+    return this.finalMeetingToHour;
+  }
+
+  public void setFinalMeetingToHour(String finalMeetingToHour) {
+    this.finalMeetingToHour = finalMeetingToHour;
+  }
 
 
   public Long getToolId() {

@@ -118,4 +118,16 @@ public class ScheduleEntry {
   public void setNotes(String notes) {
     this.notes = notes;
   }
+
+  @Override
+  public String toString() {
+    return "{" + " id='" + getId() + "'" + ", senderId='" + getSenderId() + "'" + ", receiverId='"
+        + getReceiverId() + "'" + ", rentalId='" + getRentalId() + "'" + ", relatedId='"
+        + getRelatedId() + "'" + ", date='" + getDate() + "'" + ", fromTime='" + getFromTime() + "'"
+        + ", toTime='" + getToTime() + "'" + ", notes='" + getNotes() + "'" + ", confirmed='"
+        + isConfirmed() + "'" + "}";
+  }
+
+
+
 }

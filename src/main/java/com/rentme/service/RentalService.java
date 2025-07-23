@@ -89,7 +89,7 @@ public class RentalService {
         notification.setToolName(tool.getName());
         notification.setType(NotificationType.RENTAL_REQUEST);
         notification.setMessage(renter.getName() + " want to rent your " + tool.getName() + " from "
-                + startDate + " to " + endDate);
+                + startDate + " to " + endDate + " for $" + totalPrice);
         notification.setIsRead(false);
         notification.setCreatedAt(LocalDateTime.now());
         notification.setStarts(startDate);

@@ -28,6 +28,7 @@ import com.rentme.repository.ScheduleEntryRepository;
 import com.rentme.repository.UserRepository;
 import com.rentme.service.NotificationService;
 import com.rentme.service.ScheduleService;
+import jakarta.transaction.Transactional;
 
 @RestController
 @RequestMapping("/api/schedule")
@@ -73,28 +74,23 @@ public class ScheduleController {
   }
 
   @PostMapping("/selected")
+
+  @Transactional
   public ResponseEntity<?> addSelectedSchedule(@RequestBody ScheduleConfirmationRequest request) {
     try {
-      notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE,
-          request.getRentalId());
 
-      scheduleService.addSelectedSchedule(request.getScheduleId(), request.getRentalId(),
-          request.getUserId(), request);
-      Rental rental = rentalRepository.findById(request.getRentalId())
-          .orElseThrow(() -> new RuntimeException("Rental not found"));
-
-      User sender = userRepository.getUserById(request.getUserId());
-      User owner = userRepository.getUserById(request.getUserId());
 
       ScheduleEntry selected = scheduleEntryRepository.findById(request.getScheduleId())
           .orElseThrow(() -> new RuntimeException("Schedule entry not found"));
 
       if (!Objects.equals(selected.getRentalId(), request.getRentalId())) {
-        throw new RuntimeException("Rental ID mismatch");
+        return ResponseEntity.badRequest()
+            .body("Rental ID mismatch for the selected schedule entry.");
       }
-      // send notification:
 
 
+      scheduleService.addSelectedSchedule(request.getRentalId(), request.getUserId(), request,
+          selected);
 
       return ResponseEntity.ok("Schedule confirmed successfully.");
     } catch (Exception e) {

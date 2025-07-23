@@ -8,6 +8,51 @@ public class MeetingConfirmationDTO {
   private NotificationType notiType;
   private java.time.LocalDate starts;
   private java.time.LocalDate ends;
+  private String meetingDate;
+  private String meetingHourFrom;
+
+  private String meetingHourTo;
+
+  private java.time.LocalDate notes;
+
+  public MeetingConfirmationDTO() {}
+
+  public MeetingConfirmationDTO(Long rentalId, Long userId) {
+    this.rentalId = rentalId;
+    this.userId = userId;
+  }
+
+  public String getMeetingDate() {
+    return this.meetingDate;
+  }
+
+  public void setMeetingDate(String meetingDate) {
+    this.meetingDate = meetingDate;
+  }
+
+  public String getMeetingHourFrom() {
+    return this.meetingHourFrom;
+  }
+
+  public void setMeetingHourFrom(String meetingHourFrom) {
+    this.meetingHourFrom = meetingHourFrom;
+  }
+
+  public String getMeetingHourTo() {
+    return this.meetingHourTo;
+  }
+
+  public void setMeetingHourTo(String meetingHourTo) {
+    this.meetingHourTo = meetingHourTo;
+  }
+
+  public java.time.LocalDate getNotes() {
+    return this.notes;
+  }
+
+  public void setNotes(java.time.LocalDate notes) {
+    this.notes = notes;
+  }
 
   public java.time.LocalDate getStarts() {
     return this.starts;
@@ -25,21 +70,14 @@ public class MeetingConfirmationDTO {
     this.ends = ends;
   }
 
+  // getters and setters
+
   public NotificationType getNotiType() {
     return this.notiType;
   }
 
   public void setNotiType(NotificationType notiType) {
     this.notiType = notiType;
-  }
-
-  // getters and setters
-
-  public MeetingConfirmationDTO() {}
-
-  public MeetingConfirmationDTO(Long rentalId, Long userId) {
-    this.rentalId = rentalId;
-    this.userId = userId;
   }
 
   public Long getRentalId() {

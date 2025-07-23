@@ -22,9 +22,11 @@ import com.rentme.data_transfer_objects.ToolResponseDTO;
 import com.rentme.data_transfer_objects.UserResponseDTO;
 import com.rentme.model.Notification;
 import com.rentme.model.NotificationType;
+import com.rentme.model.ScheduleEntry;
 import com.rentme.model.User;
 import com.rentme.repository.NotificationRepository;
 import com.rentme.repository.RentalRepository;
+import com.rentme.repository.ScheduleEntryRepository;
 import com.rentme.repository.UserRepository;
 import jakarta.transaction.Transactional;
 
@@ -36,12 +38,15 @@ public class NotificationService {
   private final NotificationRepository notificationRepository;
   private final UserRepository userRepository;
   private final RentalRepository rentalRepository;
+  private final ScheduleEntryRepository scheduleEntryRepository;
 
   public NotificationService(NotificationRepository notificationRepository,
-      UserRepository userRepository, RentalRepository rentalRepository) {
+      UserRepository userRepository, RentalRepository rentalRepository,
+      ScheduleEntryRepository scheduleEntryRepository) {
     this.notificationRepository = notificationRepository;
     this.userRepository = userRepository;
     this.rentalRepository = rentalRepository;
+    this.scheduleEntryRepository = scheduleEntryRepository;
   }
 
 
@@ -178,13 +183,18 @@ public class NotificationService {
     if (prev == null)
       throw new RuntimeException("Previous notification not found");
 
+    ScheduleEntry selected = scheduleEntryRepository.findEnteryById(dto.getScheduleId());
+
+    String message = prev.getSenderName() + " wants to meet with you at " + selected.getDate()
+        + ", between " + selected.getFromTime() + " and " + selected.getToTime() + ".\n";// ;+
+                                                                                         // dto.get
     Notification n = new Notification();
     n.setType(NotificationType.OWNER_TIME_RESPONSE);
-    n.setSenderId(dto.getReceiverId());
+    n.setSenderId(prev.getReceiverId());
     n.setReceiverId(prev.getSenderId());
     n.setSenderName(prev.getReceiverName());
     n.setReceiverName(prev.getSenderName());
-    n.setMessage("Schedule confirmed by " + prev.getSenderName());
+    n.setMessage(message);
     n.setToolId(prev.getToolId());
     n.setToolName(prev.getToolName());
     n.setToolPicUrl(prev.getToolPicUrl());
@@ -196,8 +206,10 @@ public class NotificationService {
     n.setRelatedId(dto.getRentalId());
     n.setCreatedAt(java.time.LocalDateTime.now());
     n.setIsRead(false);
-    notificationRepository.save(n);
-    notificationRepository.delete(prev);
+    System.out.println("Winn send now:");
+    System.out.println(notificationRepository.save(n));
+    System.out.println("🔔 Sent notification: " + n);
+    notificationRepository.deleteByTypeAndRelatedId(prev.getType(), prev.getRelatedId());
   }
 
 
@@ -243,7 +255,7 @@ public class NotificationService {
 
   private void hundelMeetingConfirmationNotif(MeetingConfirmationDTO dto) {
     Notification prev = notificationRepository
-        .findByTypeAndRelatedId(NotificationType.SCHEDULE_PROPOSAL, dto.getRentalId()).stream()
+        .findByTypeAndRelatedId(NotificationType.OWNER_TIME_RESPONSE, dto.getRentalId()).stream()
         .findFirst().orElse(null);
     if (prev == null)
       throw new RuntimeException("Previous notification not found");
@@ -254,8 +266,13 @@ public class NotificationService {
     n.setReceiverId(prev.getSenderId());
     n.setSenderName(prev.getSenderName());
     n.setReceiverName(prev.getReceiverName());
-    n.setMessage("Meeting confirmed by " + prev.getSenderName());
+    n.setMessage("You will meet " + prev.getSenderName() + " at " + dto.getMeetingDate()
+        + ", between " + dto.getMeetingHourFrom() + " and " + dto.getMeetingHourTo() + ".\n"
+        + prev.getNotes());
     n.setToolId(prev.getToolId());
+    n.setFinalMeetingDate(dto.getMeetingDate());
+    n.setFinalMeetingToHour(dto.getMeetingHourTo());
+    n.setFinalMeetingFromHour(dto.getMeetingHourFrom());
     n.setToolName(prev.getToolName());
     n.setToolPicUrl(prev.getToolPicUrl());
     n.setAddress(prev.getAddress());
@@ -289,7 +306,7 @@ public class NotificationService {
     n.setToolName(prev.getToolName());
     n.setToolPicUrl(prev.getToolPicUrl());
     n.setAddress(dto.getAddress());
-    n.setLatitude(dto.getLatitude());
+    n.setLatitude(dto.getLatitude())
     n.setLongitude(dto.getLongitude());
     n.setNotes(prev.getNotes());
     n.setStarts(prev.getStarts());
@@ -334,12 +351,22 @@ public class NotificationService {
   }
 
   private void hundelLocationOrTimeRequesNotif(LocationOrTimeRequestDTO dto) {
+
+    NotificationType prevType = NotificationType.RENTAL_APPROVED;
     NotificationType type = dto.getNofitiType().equals("OWNER_LOCATION_REQUEST")
         ? NotificationType.OWNER_LOCATION_REQUEST
         : NotificationType.OWNER_TIME_REQUEST;
-    Notification prev = notificationRepository
-        .findByTypeAndRelatedId(NotificationType.RENTAL_APPROVED, dto.getRentalId()).stream()
-        .findFirst().orElse(null);
+
+
+    if (type == NotificationType.OWNER_TIME_REQUEST)
+      prevType = NotificationType.RENTAL_APPROVED;
+    if (type == NotificationType.OWNER_LOCATION_REQUEST)
+      prevType = NotificationType.FINAL_SCHEDULE_CONFIRMED;
+
+    Notification prev = notificationRepository.findByTypeAndRelatedId(prevType, dto.getRentalId())
+        .stream().findFirst().orElse(null);
+
+
     if (prev == null)
       throw new RuntimeException("Previous notification not found");
 

@@ -16,6 +16,7 @@ import com.rentme.model.ScheduleEntry;
 import com.rentme.model.User;
 import com.rentme.repository.ScheduleEntryRepository;
 import com.rentme.repository.UserRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ScheduleService {
@@ -70,37 +71,23 @@ public class ScheduleService {
     return scheduleEntryRepository.findByReceiverId(receiver.getId());
   }
 
-  /**
-   * تابع تأكيد خيار الموعد الذي اختاره المستأجر. يتم تعيين الخيار المختار كـ confirmed، وقد نرغب
-   * أيضًا بإلغاء التأكيد عن الخيارات الأخرى.
-   */
-  public void addSelectedSchedule(Long scheduleId, Long rentalId, Long userId,
-      ScheduleConfirmationRequest request) {
-    ScheduleEntry selected = scheduleEntryRepository.findById(scheduleId)
-        .orElseThrow(() -> new RuntimeException("Schedule entry not found"));
+  public void addSelectedSchedule(Long rentalId, Long userId, ScheduleConfirmationRequest request,
+      ScheduleEntry selected) {
 
-    if (!Objects.equals(selected.getRentalId(), rentalId)) {
-      throw new RuntimeException("Rental ID mismatch");
-    }
-
-    // تعيين الخيار المختار كـ confirmed.
-    // selected.setConfirmed(true);
-    scheduleEntryRepository.save(selected);
-
-    // إلغاء التأكيد عن باقي الخيارات في نفس الإيجار (إذا رغبت في ذلك)
     List<ScheduleEntry> allEntries = scheduleEntryRepository.findByRentalId(rentalId);
-    List<ScheduleEntry> otherEntries =
-        allEntries.stream().filter(e -> !e.getId().equals(scheduleId)).collect(Collectors.toList());
-    for (ScheduleEntry entry : otherEntries) {
-      if (entry.isConfirmed()) {
-        entry.setConfirmed(false);
-      }
-    }
-    scheduleEntryRepository.saveAll(otherEntries);
-    notificationService.sendNotification(request);
-    // notificationService.sendNotification(selected.getSenderId(), userId,
-    // NotificationType.OWNER_TIME_RESPONSE, "The renter selected a schedule time.", rentalId);
 
-    notificationService.deleteByTypeAndRental(NotificationType.OWNER_TIME_RESPONSE, rentalId);
+
+    if (!allEntries.isEmpty())
+      for (ScheduleEntry entry : allEntries)
+        if (entry.getId() != selected.getId())
+          try {
+            scheduleEntryRepository.delete(entry);
+          } catch (Exception e) {
+            System.err.println("Error deleting schedule entry: " + e.getMessage());
+          }
+
+
+    // Notify the receiver
+    notificationService.sendNotification(request);
   }
 }

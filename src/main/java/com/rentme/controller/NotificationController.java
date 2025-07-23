@@ -122,9 +122,6 @@ public class NotificationController {
 
     notificationService.sendNotification(dto);
 
-    notificationService.deleteByTypeAndRental(NotificationType.FINAL_SCHEDULE_CONFIRMED,
-        dto.getRentalId());
-
 
     return ResponseEntity.ok("Location request sent");
   }

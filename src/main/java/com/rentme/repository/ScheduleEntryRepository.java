@@ -16,6 +16,10 @@ public interface ScheduleEntryRepository extends JpaRepository<ScheduleEntry, Lo
 
   List<ScheduleEntry> findByRentalId(Long rentalId);
 
+  ScheduleEntry findFirstByRentalId(Long rentalId);
+
+  ScheduleEntry findEnteryById(Long id);
+
 
 
   @Modifying

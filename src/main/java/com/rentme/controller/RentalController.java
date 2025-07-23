@@ -276,29 +276,24 @@ public class RentalController {
     }
 
     @PostMapping("/confirm-meeting")
+    @Transactional
+
     public ResponseEntity<?> confirmMeeting(@RequestBody MeetingConfirmationDTO dto) {
         System.out.println("rentalId========================= " + dto.getRentalId());
 
-        // ScheduleEntry entry = scheduleEntryRepository.findByRentalId(dto.getRentalId()).get(0);
-        List<ScheduleEntry> entries = scheduleEntryRepository.findByRentalId(dto.getRentalId());
-
-        if (entries.isEmpty()) {
+        ScheduleEntry entry = scheduleEntryRepository.findFirstByRentalId(dto.getRentalId());
+        if (entry == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("No schedule entries found for rental ID: " + dto.getRentalId());
+                    .body("No schedule entry found for this rental.");
         }
 
-        ScheduleEntry entry = entries.get(0);
 
-
+        dto.setMeetingDate(entry.getDate());
+        dto.setMeetingHourFrom(entry.getFromTime());
+        dto.setMeetingHourTo(entry.getToTime());
         entry.setConfirmed(true);
-        scheduleEntryRepository.save(entry);
+        scheduleEntryRepository.delete(entry);
 
-        scheduleEntryRepository.deleteByRentalIdAndIdNot(entry.getRentalId(), entry.getId());
-        User sender = userRepository.findById(entry.getSenderId())
-                .orElseThrow(() -> new RuntimeException("Receiver user not found"));
-        Notification n = notificationRepository
-                .findByTypeAndRelatedId(NotificationType.SCHEDULE_PROPOSAL, dto.getRentalId())
-                .get(0);
         notificationService.sendNotification(dto);
         return ResponseEntity.ok("Meeting confirmed and renter notified.");
     }
