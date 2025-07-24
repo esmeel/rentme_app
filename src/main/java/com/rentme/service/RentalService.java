@@ -81,8 +81,8 @@ public class RentalService {
 
         rentalRepository.save(rental);
         Notification notification = new Notification();
-        notification.setSenderId(renter.getId()); // أو من JWT
-        notification.setSenderName(renter.getName()); // أو من JWT
+        notification.setSenderId(renter.getId());
+        notification.setSenderName(renter.getName());
         notification.setReceiverId(tool.getOwner().getId());
         notification.setReceiverName(tool.getOwner().getName());
         notification.setToolPicUrl(tool.getImageUrl());

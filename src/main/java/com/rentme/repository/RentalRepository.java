@@ -24,4 +24,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     boolean existsByToolIdAndRenterId(Long toolId, Long renterId);
 
+    boolean existsByToolIdAndRenterIdAndStatusNot(Long toolId, Long renterId, RentalStatus ended);
+
 }

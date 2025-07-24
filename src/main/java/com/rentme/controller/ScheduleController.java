@@ -118,9 +118,6 @@ public class ScheduleController {
 
 
     // Compose message
-    String dateTime = entry.getDate() + " " + entry.getFromTime(); // Customize formatting as needed
-    String message = "You will meet with " + sender.getName() + " at " + dateTime
-        + "Important: You must tap 'Confirm Received' once you receive the tool.";
 
     // Send notification to renter (the receiver of the original proposal)
     // notificationService.sendNotification(receiver.getId(), sender.getId(),

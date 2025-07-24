@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.google.api.client.util.DateTime;
 import com.rentme.data_transfer_objects.ConfirmReceivedDTO;
 import com.rentme.data_transfer_objects.MeetingConfirmationDTO;
 import com.rentme.data_transfer_objects.RentalRequest;
@@ -73,28 +73,7 @@ public class RentalController {
     @PostMapping("/request-mark-returned")
     public ResponseEntity<String> requestMarkReturned(@RequestBody ReturnToolRequestDTO request) {
 
-        Rental rental = rentalRepository.findRentalById(request.getRentalId());
-        User sender = userRepository.getUserById(request.getRenterId());
-        User receiver = userRepository.getUserById(rental.getOwnerId());
-        Notification notif = new Notification();
-        notif.setAddress("");
-        notif.setCreatedAt(LocalDateTime.now());
-        notif.setReceiverId(receiver.getId());
-        notif.setSenderId(sender.getId());
-        notif.setReceiverName(receiver.getName());
-        notif.setSenderName(sender.getName());
-        notif.setToolName(rental.getToolName());
-        notif.setToolPicUrl(rental.getToolPic());
-        notif.setIsRead(false);
-        notif.setStarts(rental.getStartDate());
-        notif.setEnds(rental.getEndDate());
-        notif.setRelatedId(rental.getId());
-        notif.setType(NotificationType.RETURN_CONFIRMATION_REQUEST);
-        notif.setMessage(sender.getName()
-                + " is requesting that you confirm the return of the tool " + rental.getToolName());
-
-
-        notificationService.sendNotification(notif);
+        notificationService.sendNotification(request);
 
         boolean success =
                 rentalService.requestMarkReturned(request.getRentalId(), request.getRenterId());
@@ -125,14 +104,15 @@ public class RentalController {
     @GetMapping("/exists")
     public ResponseEntity<Boolean> rentalExists(@RequestParam Long toolId,
             @RequestParam Long renterId) {
-        boolean exists = rentalRepository.existsByToolIdAndRenterId(toolId, renterId);
+        boolean exists = rentalRepository.existsByToolIdAndRenterIdAndStatusNot(toolId, renterId,
+                RentalStatus.ENDED);
         return ResponseEntity.ok(exists);
     }
 
     @PostMapping
     public ResponseEntity<?> createRental(@RequestBody RentalRequest request) {
-        boolean exists = rentalRepository.existsByToolIdAndRenterId(request.getToolId(),
-                request.getRenterId());
+        boolean exists = rentalRepository.existsByToolIdAndRenterIdAndStatusNot(request.getToolId(),
+                request.getRenterId(), RentalStatus.ENDED);
 
         if (exists) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -254,9 +234,9 @@ public class RentalController {
                 : NotificationType.RENTAL_REJECTED);
         notification.setRelatedId(rental.getId());
         notification.setMessage(request.isAccept()
-                ? owner.getName() + " accepted to rent you " + rental.getTool().getName()
-                : owner.getName() + " rejected / canceled to rent you "
-                        + rental.getTool().getName());
+                ? owner.getName() + " accepted to rent you " + rental.getTool().getName() + " for $"
+                        + rental.getTotalPrice()
+                : owner.getName() + " rejected to rent you " + rental.getTool().getName());
         notification.setCreatedAt(LocalDateTime.now());
         notification.setIsRead(false);
         notification.setStarts(request.getStarts());;
@@ -314,9 +294,9 @@ public class RentalController {
         }
 
         rental.setStatus(RentalStatus.ACTIVE);
+        rental.setActivatedAt(LocalDateTime.now());
         rentalRepository.save(rental);
 
-        // إرسال إشعار للمالك
 
         notificationService.sendNotification(request);
 
