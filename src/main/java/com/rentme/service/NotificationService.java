@@ -135,11 +135,11 @@ public class NotificationService {
     notification.setRelatedId(prevNotification.getRelatedId());
     notification.setCreatedAt(java.time.LocalDateTime.now());
     notification.setIsRead(false);
-    notification.setToolId(prevNotification != null ? prevNotification.getToolId() : -1);
-    notification.setToolPicUrl(prevNotification != null ? prevNotification.getToolPicUrl() : "");
-    notification.setToolName(prevNotification != null ? prevNotification.getToolName() : "");
-    notification.setAddress(prevNotification != null ? prevNotification.getAddress() : "");
-    notification.setNotes(prevNotification != null ? prevNotification.getNotes() : "");
+    notification.setToolId(prevNotification.getToolId());
+    notification.setToolPicUrl(prevNotification.getToolPicUrl());
+    notification.setToolName(prevNotification.getToolName());
+    notification.setAddress(prevNotification.getAddress());
+    notification.setNotes(prevNotification.getNotes());
     notification.setSenderName(prevNotification.getReceiverName());
     notification.setReceiverName(prevNotification.getSenderName());
     notification.setStarts(prevNotification.getStarts());
