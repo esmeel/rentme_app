@@ -52,7 +52,7 @@ public class SecurityConfig {
                                                 "/api/upload/identity", "/api/upload/identity/**",
                                                 "/api/identity-requests/status", // identity-requests/status
                                                 "/api/identity-requests/**", /////
-                                                "/api/payments/**", /////
+                                                "/api/payments/**", "/api/invoices/**",
                                                 "/api/tools/my-tools-with-others/**",
                                                 "/api/schedule/**")
                                 .permitAll()

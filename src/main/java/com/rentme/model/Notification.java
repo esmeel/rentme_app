@@ -49,6 +49,20 @@ public class Notification {
   private String finalMeetingFromHour;
   private String finalMeetingToHour;
 
+  private boolean isPaid;
+
+  public boolean isIsPaid() {
+    return this.isPaid;
+  }
+
+  public boolean getIsPaid() {
+    return this.isPaid;
+  }
+
+  public void setIsPaid(boolean isPaid) {
+    this.isPaid = isPaid;
+  }
+
 
 
   public String getFinalMeetingDate() {
@@ -286,7 +300,6 @@ public class Notification {
     this.createdAt = createdAt;
   }
 
-
   @Override
   public String toString() {
     return "{" + " id='" + getId() + "'" + ", receiverId='" + getReceiverId() + "'" + ", toolId='"
@@ -299,7 +312,10 @@ public class Notification {
         + getLatitude() + "'" + ", longitude='" + getLongitude() + "'" + ", locationRequested='"
         + isLocationRequested() + "'" + ", timeRequested='" + isTimeRequested() + "'" + ", type='"
         + getType() + "'" + ", read='" + isRead() + "'" + ", relatedId='" + getRelatedId() + "'"
-        + ", createdAt='" + getCreatedAt() + "'" + "}";
+        + ", createdAt='" + getCreatedAt() + "'" + ", finalMeetingDate='" + getFinalMeetingDate()
+        + "'" + ", finalMeetingFromHour='" + getFinalMeetingFromHour() + "'"
+        + ", finalMeetingToHour='" + getFinalMeetingToHour() + "'" + ", isPaid='" + isIsPaid() + "'"
+        + "}";
   }
 
 

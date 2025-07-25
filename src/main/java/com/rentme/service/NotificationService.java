@@ -16,7 +16,6 @@ import com.rentme.data_transfer_objects.RentalResponseRequest;
 import com.rentme.data_transfer_objects.ReportRequestDTO;
 import com.rentme.data_transfer_objects.ReturnToolRequestDTO;
 import com.rentme.data_transfer_objects.ScheduleConfirmationRequest;
-import com.rentme.data_transfer_objects.ScheduleEntryDTO;
 import com.rentme.data_transfer_objects.ScheduleRequestDTO;
 import com.rentme.data_transfer_objects.ToolResponseDTO;
 import com.rentme.data_transfer_objects.UserResponseDTO;
@@ -28,7 +27,6 @@ import com.rentme.repository.NotificationRepository;
 import com.rentme.repository.RentalRepository;
 import com.rentme.repository.ScheduleEntryRepository;
 import com.rentme.repository.UserRepository;
-import jakarta.transaction.Transactional;
 
 @Service
 public class NotificationService {
@@ -132,8 +130,8 @@ public class NotificationService {
     notification.setType(NotificationType.SCHEDULE_PROPOSAL);
     notification.setSenderId(prevNotification.getReceiverId());
     notification.setReceiverId(prevNotification.getSenderId());
-    notification
-        .setMessage("You have a new schedule proposal from " + prevNotification.getReceiverName());
+    notification.setMessage(
+        prevNotification.getReceiverName() + "has provided his available times for the meeting");
     notification.setRelatedId(prevNotification.getRelatedId());
     notification.setCreatedAt(java.time.LocalDateTime.now());
     notification.setIsRead(false);
