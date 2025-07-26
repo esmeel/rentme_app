@@ -1,6 +1,7 @@
 package com.rentme.data_transfer_objects;
 
 import java.time.LocalDate;
+import java.util.Locale;
 
 public class RentalRequest {
   private Long toolId;
@@ -8,6 +9,13 @@ public class RentalRequest {
   private LocalDate startDate;
   private LocalDate endDate;
   private double totalPrice;
+  Locale locale;
+
+  public Locale getLocale() {
+    return this.locale;
+  }
+
+
 
   public double getTotalPrice() {
     return this.totalPrice;

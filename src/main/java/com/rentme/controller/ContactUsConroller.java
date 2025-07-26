@@ -23,14 +23,18 @@ public class ContactUsConroller {
     this.contactUsRepository = contactUsRepository;
     this.contactUsService = contactUsService;
 
+
   }
 
   @PostMapping("/send-message")
   public ResponseEntity<?> messages(@RequestBody contacUsDTO dto) {
-    System.err.println("Message: " + dto.toString());
+
+    System.out.println("Message: " + dto.toString());
+    if (dto.getEmail() == null)
+      return ResponseEntity.badRequest().body("Email is required");
+
     contactUsService.receiveMessage(dto);
 
     return ResponseEntity.ok("Message sent");
   }
-
 }

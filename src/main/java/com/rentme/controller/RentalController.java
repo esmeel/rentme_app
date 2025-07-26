@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.google.api.client.util.DateTime;
+
 import com.rentme.data_transfer_objects.ConfirmReceivedDTO;
 import com.rentme.data_transfer_objects.MeetingConfirmationDTO;
 import com.rentme.data_transfer_objects.RentalRequest;
@@ -118,18 +118,17 @@ public class RentalController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("You already submitted a rental request for this tool.");
         }
+
         Rental rental = rentalService.createRental(request.getToolId(), request.getRenterId(),
                 request.getStartDate(), request.getEndDate(), notificationRepository,
-                request.getTotalPrice());
+                request.getTotalPrice(), request.getLocale());
         return ResponseEntity.ok(rental);
+
     }
 
-    // @PutMapping("/{rentalId}/status")
-    // public ResponseEntity<Rental> updateRentalStatus(@PathVariable Long rentalId,
-    // @RequestParam RentalStatus status) {
-    // Rental rental = rentalService.updateStatus(rentalId, status);
-    // return ResponseEntity.ok(rental);
-    // }
+    // // public Rental createRental(Long toolId, Long renterId, java.time.LocalDate startDate,
+    // java.time.LocalDate endDate, NotificationRepository notificationRepository,
+    // double totalPrice, Locale locale)
 
     @GetMapping("/my-tools-requests")
     public ResponseEntity<?> getRequestsForMyTools(HttpServletRequest request) {
@@ -176,7 +175,7 @@ public class RentalController {
         System.out.println("confirm-return, Token:" + token);
 
         String email = jwtUtil.extractEmail(token);
-        return rentalService.confirmReturn(rentalId, email);
+        return rentalService.confirmReturn(rentalId, email, request.getLocale());
     }
 
 

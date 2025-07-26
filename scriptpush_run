@@ -11,7 +11,7 @@ echo "Starting Spring Boot..."
 
 
 -------------------
-get the newer:
+#get the changes from gitub:
 git pull
 
 ./mvnw spring-boot:run

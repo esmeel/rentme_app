@@ -1,10 +1,13 @@
 
 package com.rentme.service;
 
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,16 +32,19 @@ public class RentalService {
     private final ToolRepository toolRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final MessageSource messageSource;
     // @ManyToOne
     @JoinColumn(name = "tool_id")
     private Tool tool;
 
     public RentalService(RentalRepository rentalRepository, ToolRepository toolRepository,
-            UserRepository userRepository, NotificationService notificationService) {
+            UserRepository userRepository, NotificationService notificationService,
+            MessageSource messageSource) {
         this.rentalRepository = rentalRepository;
         this.toolRepository = toolRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
+        this.messageSource = messageSource;
     }
 
     public List<Rental> getIncomingRequests(User owner) {
@@ -53,13 +59,19 @@ public class RentalService {
     // إنشاء طلب استئجار جديد
     public Rental createRental(Long toolId, Long renterId, java.time.LocalDate startDate,
             java.time.LocalDate endDate, NotificationRepository notificationRepository,
-            double totalPrice) {
+            double totalPrice, Locale locale) {
 
-        this.tool = toolRepository.findById(toolId)
-                .orElseThrow(() -> new RuntimeException("Tool not found"));
+        this.tool = toolRepository.findById(toolId).orElseThrow(() -> {
+            String message =
+                    messageSource.getMessage("error.tool.notfound", new Object[] {toolId}, locale);
+            return new RuntimeException(message);
+        });
 
-        User renter = userRepository.findById(renterId)
-                .orElseThrow(() -> new RuntimeException("Renter not found"));
+        User renter = userRepository.findById(renterId).orElseThrow(() -> {
+            String message = messageSource.getMessage("error.renter.notfound",
+                    new Object[] {renterId}, locale);
+            return new RuntimeException(message);
+        });
 
         User owner = tool.getOwner();
 
@@ -88,8 +100,15 @@ public class RentalService {
         notification.setToolPicUrl(tool.getImageUrl());
         notification.setToolName(tool.getName());
         notification.setType(NotificationType.RENTAL_REQUEST);
-        notification.setMessage(renter.getName() + " want to rent your " + tool.getName() + " from "
-                + startDate + " to " + endDate + " for $" + totalPrice);
+
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+        String formattedPrice = currencyFormatter.format(totalPrice);
+
+        Object[] messageArgs =
+                {renter.getName(), tool.getName(), startDate, endDate, formattedPrice};
+        String message =
+                messageSource.getMessage("notification.rental.request", messageArgs, locale);
+        notification.setMessage(message);
         notification.setIsRead(false);
         notification.setCreatedAt(LocalDateTime.now());
         notification.setStarts(startDate);
@@ -126,10 +145,11 @@ public class RentalService {
     }
 
 
-    public ResponseEntity<?> confirmReturn(Long rentalId, String email) {
+    public ResponseEntity<?> confirmReturn(Long rentalId, String email, Locale locale) {
         Optional<Rental> rentalOpt = rentalRepository.findById(rentalId);
         if (rentalOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rental not found");
+            String message = messageSource.getMessage("rental.error.notfound", null, locale);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
         }
 
         Rental rental = rentalOpt.get();
@@ -137,13 +157,14 @@ public class RentalService {
         User owner = userRepository.getUserById(rental.getOwnerId());
         // التحقّق من أنّ المستخدم هو المالك
         if (!email.equals(owner.getEmail())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Only the owner can confirm return");
+            String message =
+                    messageSource.getMessage("rental.error.unauthorized.confirm", null, locale);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
         }
 
         if (!rental.isRequestedReturnByRenter()) {
-            return ResponseEntity.badRequest()
-                    .body("Tool has not been requested for return by renter");
+            String message = messageSource.getMessage("rental.error.notrequested", null, locale);
+            return ResponseEntity.badRequest().body(message);
         }
 
         rental.setConfirmedReturnedByOwner(true);
@@ -152,12 +173,15 @@ public class RentalService {
         rentalRepository.save(rental);
         notificationService.deleteByTypeAndRental(NotificationType.RETURN_CONFIRMATION_REQUEST,
                 rentalId);
-        return ResponseEntity.ok("Tool return confirmed successfully");
+        String message = messageSource.getMessage("rental.success.confirmed", null, locale);
+        return ResponseEntity.ok(message);
     }
 
 
     public boolean requestReturn(Long rentalId, Long userId) {
         Optional<Rental> rentalOpt = rentalRepository.findById(rentalId);
+
+
 
         if (rentalOpt.isEmpty())
             return false;

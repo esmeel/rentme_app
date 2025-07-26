@@ -16,6 +16,8 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     List<Rental> findByToolId(Long toolId);
 
+
+
     List<Rental> findByOwnerId(Long toolId);
 
     List<Rental> findRentalByOwnerIdAndStatus(Long ownerId, RentalStatus status);
