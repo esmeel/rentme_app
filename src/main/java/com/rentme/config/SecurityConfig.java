@@ -51,7 +51,7 @@ public class SecurityConfig {
                                                 "/admin/identity-requests/**",
                                                 "/api/upload/identity", "/api/upload/identity/**",
                                                 "/api/identity-requests/status", // identity-requests/status
-                                                "/api/identity-requests/**", /////
+                                                "/api/identity-requests/**", "/api/contact-us/**",
                                                 "/api/payments/**", "/api/invoices/**",
                                                 "/api/tools/my-tools-with-others/**",
                                                 "/api/schedule/**")

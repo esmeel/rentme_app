@@ -9,12 +9,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-
 @Controller
+
 public class AdminAuthController {
+
+
 
   @GetMapping("/admin/login")
   public String adminLogin() {
@@ -29,4 +28,5 @@ public class AdminAuthController {
     System.out.println("🎖 Roles: " + auth.getAuthorities());
     return "identity_requests";
   }
+
 }
