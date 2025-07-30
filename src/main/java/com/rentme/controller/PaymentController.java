@@ -30,7 +30,6 @@ public class PaymentController {
   private final BraintreeGateway gateway;
   private final RentalRepository rentalRepository;
   private final NotificationRepository notificationRepository;
-  private final NotificationService notificationService;
   private final InvoiceRepository invoiceRepository;
 
   @Autowired
@@ -40,7 +39,6 @@ public class PaymentController {
     this.gateway = gateway;
     this.rentalRepository = rentalRepository;
     this.notificationRepository = notificationRepository;
-    this.notificationService = notificationService;
     this.invoiceRepository = invoiceRepository;
   }
 
@@ -94,6 +92,7 @@ public class PaymentController {
 
       return ResponseEntity.ok("Payment successful, Invoice id:" + invoice.getId());
     } else {
+      System.out.println("Payment Faild: " + result.getMessage());
       return ResponseEntity.badRequest().body("Payment failed: " + result.getMessage());
     }
   }
