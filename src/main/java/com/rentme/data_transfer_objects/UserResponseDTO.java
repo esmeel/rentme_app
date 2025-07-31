@@ -12,12 +12,12 @@ public class UserResponseDTO {
     private String city;
     private String country;
     private String profilePicUrl;
+    private String defaultAddress;
     private boolean verified;
     private Set<Long> savedToolsIds;
     private double ratingAvg;
     private int stars;
     private int ratingCount;
-
 
     public UserResponseDTO(User user) {
         this.id = user.getId();
@@ -32,6 +32,16 @@ public class UserResponseDTO {
         this.stars = user.getStars();
         this.ratingAvg = user.getRatingAvg();
         this.ratingCount = user.getRatingCount();
+        this.defaultAddress = user.getDefaultAddress();
+    }
+
+    public String getDefaultAddress() {
+        return this.defaultAddress;
+    }
+
+
+    public void setDefaultAddress(String defaultAddress) {
+        this.defaultAddress = defaultAddress;
     }
 
     public boolean getVerified() {
@@ -176,20 +186,16 @@ public class UserResponseDTO {
         return this;
     }
 
-
-
     @Override
     public String toString() {
-        return "Content:\n{" +
-                "id='" + id + "'\n" +
-                "name='" + name + "'\n" +
-                "email='" + email + "'\n" +
-                "phone='" + phone + "'\n" +
-                "city='" + city + "'\n" +
-                "country='" + country + "'\n" +
-                "profilePicUrl='" + getProfilePicUrl() + "'\n" +
-                "verified=" + verified + "\n" +
-                "savedToolsIds=" + savedToolsIds +
-                "}";
+        return "{" + " id='" + getId() + "'" + ", name='" + getName() + "'" + ", email='"
+                + getEmail() + "'" + ", phone='" + getPhone() + "'" + ", city='" + getCity() + "'"
+                + ", country='" + getCountry() + "'" + ", profilePicUrl='" + getProfilePicUrl()
+                + "'" + ", defaultAddress='" + getDefaultAddress() + "'" + ", verified='"
+                + isVerified() + "'" + ", savedToolsIds='" + getSavedToolsIds() + "'"
+                + ", ratingAvg='" + getRatingAvg() + "'" + ", stars='" + getStars() + "'"
+                + ", ratingCount='" + getRatingCount() + "'" + "}";
     }
+
+
 }

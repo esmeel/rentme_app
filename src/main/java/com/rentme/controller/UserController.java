@@ -69,6 +69,7 @@ public class UserController {
     /// Update:
     @PostMapping("/update")
     public ResponseEntity<?> updateUserProfile(@RequestPart("name") String name,
+            @RequestPart("defaultAddress") String defaultAddress,
             @RequestPart("email") String email, @RequestPart("phone") String phone,
             @RequestPart("city") String city, @RequestPart("country") String country,
             @RequestPart(value = "file", required = false) MultipartFile file,
@@ -94,6 +95,8 @@ public class UserController {
             user.setPhone(phone);
             user.setCity(city);
             user.setCountry(country);
+            if (defaultAddress != null && !defaultAddress.isEmpty())
+                user.setDefaultAddress(defaultAddress);
 
             // save profile picture if provided
             if (file != null && !file.isEmpty()) {
@@ -106,14 +109,13 @@ public class UserController {
                 String fullUrl = IpLocal.get() + "uploads/profile_pics/" + fileName;
 
                 user.setProfilePicUrl(fullUrl);
-                userRepository.save(user);
             }
 
             userRepository.save(user);
 
             return ResponseEntity.ok(user.getProfilePicUrl());
 
-        } catch (Exception e) {
+        } catch (java.io.IOException | RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", e.getMessage()));
         }
@@ -147,7 +149,6 @@ public class UserController {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(result.getAllErrors());
         }
-        // System.exit(2);
         if (userRepository.findByEmail(user.getEmail()) != null) {
             return ResponseEntity.badRequest().body("Email already in use.");
         }

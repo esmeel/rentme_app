@@ -8,6 +8,7 @@ public class UserRegisterDTO {
     private String city;
     private String country;
     private String password;
+    private String defaultAddress;
 
     public String getName() {
         return name;
@@ -56,4 +57,13 @@ public class UserRegisterDTO {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getDefaultAddress() {
+        return this.defaultAddress;
+    }
+
+    public void setDefaultAddress(String defaultAddress) {
+        this.defaultAddress = defaultAddress;
+    }
+
 }

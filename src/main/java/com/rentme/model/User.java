@@ -48,6 +48,9 @@ public class User implements UserDetails {
     private String phone;
 
     private String city;
+
+
+
     private String country;
 
     private String profilePicUrl;
@@ -283,12 +286,21 @@ public class User implements UserDetails {
         this.userReviews = userReviews;
     }
 
+
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", name='" + name + '\'' + ", email='" + email + '\''
-                + ", phone='" + phone + '\'' + ", city='" + city + '\'' + ", country='" + country
-                + '\'' + ", profilePicUrl='" + getProfilePicUrl() + '\'' + ", verified=" + verified
-                + ", savedToolsIds=" + savedToolsIds + ", rating Avg=" + ratingAvg + ", stars="
-                + stars + ", rating Count=" + ratingCount + '}';
+        return "{" + " defaultLatitude='" + getDefaultLatitude() + "'" + ", defaultLongitude='"
+                + getDefaultLongitude() + "'" + ", defaultAddress='" + getDefaultAddress() + "'"
+                + ", id='" + getId() + "'" + ", role='" + getRole() + "'" + ", loginProvider='"
+                + getLoginProvider() + "'" + ", name='" + getName() + "'" + ", email='" + getEmail()
+                + "'" + ", phone='" + getPhone() + "'" + ", city='" + getCity() + "'" + "'"
+                + ", country='" + getCountry() + "'" + ", profilePicUrl='" + getProfilePicUrl()
+                + "'" + ", verified='" + isVerified() + "'" + ", password='" + getPassword() + "'"
+                + ", ratingAvg='" + getRatingAvg() + "'" + ", stars='" + getStars() + "'"
+                + ", ratingCount='" + getRatingCount() + "'" + ", idVerifyTime='"
+                + getIdVerifyTime() + "'" + ", userReviews='" + getUserReviews() + "'" + ", tools='"
+                + getTools() + "'" + ", savedToolsIds='" + getSavedToolsIds() + "'" + ", fcmToken='"
+                + getFcmToken() + "'" + ", savedTools='" + getSavedTools() + "'" + "}";
     }
+
 }
