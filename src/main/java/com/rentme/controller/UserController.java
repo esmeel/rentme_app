@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,6 +46,7 @@ import com.rentme.model.User;
 import com.rentme.repository.UserRepository;
 import com.rentme.security.JwtUtil;
 import com.rentme.service.ToolService;
+import com.rentme.service.UserService;
 
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,12 +60,13 @@ public class UserController {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final JwtUtil jwtUtil;
+    private final UserService userService;
     /////
 
-    public UserController(UserRepository userRepository, JwtUtil jwtUtil) {
+    public UserController(UserRepository userRepository, UserService userService, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
-        System.out.println("UserController created!!");
+        this.userService = userService;
     }
 
     /// Update:
@@ -278,6 +281,23 @@ public class UserController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
+
+
+    @DeleteMapping("/delete-google-user")
+    public ResponseEntity<?> deleteGoogleUser(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        String userEmail = jwtUtil.extractUsername(token);
+
+        boolean deleted = userService.deleteUserByEmail(userEmail);
+
+        if (deleted) {
+            return ResponseEntity.ok().body("User deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+    }
+
+
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long userId) {

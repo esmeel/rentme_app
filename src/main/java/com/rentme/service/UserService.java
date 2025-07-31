@@ -16,6 +16,14 @@ public class UserService {
     @Autowired
     private JwtUtil jwtUtil;
 
+    public boolean deleteUserByEmail(String email) {
+        User optionalUser = userRepository.findByEmail(email);
+        if (optionalUser != null) {
+            userRepository.delete(optionalUser);
+            return true;
+        }
+        return false;
+    }
 
     public User getUserFromToken(String token) {
         if (token.startsWith("Bearer ")) {
