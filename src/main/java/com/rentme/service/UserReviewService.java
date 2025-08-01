@@ -22,7 +22,7 @@ public class UserReviewService {
   }
 
   public List<UserReview> getReviewsByTargetUser(User user) {
-    return userReviewRepository.findByTargetUser(user);
+    return userReviewRepository.findByTargetUserId(user.getId());
   }
 
   public UserReview createReview(UserReview review) {

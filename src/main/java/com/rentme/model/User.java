@@ -66,9 +66,9 @@ public class User implements UserDetails {
 
     private int ratingCount;
     private LocalDateTime idVerifyTime;
-    @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<UserReview> userReviews;
+
+
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Tool> tools;
@@ -238,9 +238,6 @@ public class User implements UserDetails {
         return this.verified;
     }
 
-    public List<UserReview> getUserReviews() {
-        return this.userReviews;
-    }
 
     public double getRatingAvg() {
         return this.ratingAvg;
@@ -282,25 +279,6 @@ public class User implements UserDetails {
         this.savedTools = savedTools;
     }
 
-    public void setUserReviews(List<UserReview> userReviews) {
-        this.userReviews = userReviews;
-    }
 
-
-    @Override
-    public String toString() {
-        return "{" + " defaultLatitude='" + getDefaultLatitude() + "'" + ", defaultLongitude='"
-                + getDefaultLongitude() + "'" + ", defaultAddress='" + getDefaultAddress() + "'"
-                + ", id='" + getId() + "'" + ", role='" + getRole() + "'" + ", loginProvider='"
-                + getLoginProvider() + "'" + ", name='" + getName() + "'" + ", email='" + getEmail()
-                + "'" + ", phone='" + getPhone() + "'" + ", city='" + getCity() + "'" + "'"
-                + ", country='" + getCountry() + "'" + ", profilePicUrl='" + getProfilePicUrl()
-                + "'" + ", verified='" + isVerified() + "'" + ", password='" + getPassword() + "'"
-                + ", ratingAvg='" + getRatingAvg() + "'" + ", stars='" + getStars() + "'"
-                + ", ratingCount='" + getRatingCount() + "'" + ", idVerifyTime='"
-                + getIdVerifyTime() + "'" + ", userReviews='" + getUserReviews() + "'" + ", tools='"
-                + getTools() + "'" + ", savedToolsIds='" + getSavedToolsIds() + "'" + ", fcmToken='"
-                + getFcmToken() + "'" + ", savedTools='" + getSavedTools() + "'" + "}";
-    }
 
 }
