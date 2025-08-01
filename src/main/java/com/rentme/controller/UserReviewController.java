@@ -26,8 +26,7 @@ public class UserReviewController {
   private final UserService userService;
 
   public UserReviewController(UserReviewService userReviewService,
-      UserReviewRepository userReviewRepository,
-      UserRepository userRepository,
+      UserReviewRepository userReviewRepository, UserRepository userRepository,
       UserService userService) {
     this.userReviewService = userReviewService;
     this.userReviewRepository = userReviewRepository;
@@ -44,9 +43,8 @@ public class UserReviewController {
     System.out.println("Data:" + dto.toString());
     System.out.println();
     /*
-     * 'targetUserId': user!.id,
-     * 'reviewerId': AppGlobals.currentUser.id,
-     * 'rating': userRating.toInt(),
+     * 'targetUserId': user!.id, 'reviewerId': AppGlobals.currentUser.id, 'rating':
+     * userRating.toInt(),
      */
     if (targetUser == null || reviewer == null) {
       System.out.println("");
@@ -62,8 +60,8 @@ public class UserReviewController {
     }
 
     UserReview review = new UserReview();
-    review.setTargetUser(targetUser);
-    review.setReviewer(reviewer);
+    review.setTargetUserId(targetUser.getId());
+    review.setReviewerId(reviewer.getId());
     review.setRating(dto.getRating());
 
     userReviewRepository.save(review);
@@ -80,6 +78,6 @@ public class UserReviewController {
       return ResponseEntity.notFound().build();
     }
 
-    return ResponseEntity.ok(userReviewRepository.findByTargetUser(targetUser));
+    return ResponseEntity.ok(userReviewRepository.findByTargetUserId(targetUserId));
   }
 }

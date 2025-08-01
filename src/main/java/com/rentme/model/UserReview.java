@@ -1,11 +1,10 @@
 package com.rentme.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,17 +14,31 @@ public class UserReview {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  private int rating; // بدون تعليق
+  private int rating;
 
-  @ManyToOne
-  @JoinColumn(name = "reviewer_id")
-  private User reviewer;
+  @Column(name = "reviewer_id")
+  private Long reviewerId;
 
-  @ManyToOne
-  @JoinColumn(name = "target_user_id")
-  private User targetUser;
+  @Column(name = "target_user_id")
+  private Long targetUserId;
 
   // Getters & Setters
+
+  public Long getReviewerId() {
+    return this.reviewerId;
+  }
+
+  public void setReviewerId(Long reviewerId) {
+    this.reviewerId = reviewerId;
+  }
+
+  public Long getTargetUserId() {
+    return this.targetUserId;
+  }
+
+  public void setTargetUserId(Long targetUserId) {
+    this.targetUserId = targetUserId;
+  }
 
   public Long getId() {
     return id;
@@ -43,32 +56,6 @@ public class UserReview {
     this.rating = rating;
   }
 
-  public User getReviewer() {
-    return reviewer;
-  }
-
-  public void setReviewer(User reviewer) {
-    this.reviewer = reviewer;
-  }
-
-  public User getTargetUser() {
-    return targetUser;
-  }
-
-  public void setTargetUser(User targetUser) {
-    this.targetUser = targetUser;
-  }
-
-
-  @Override
-  public String toString() {
-    return "{" +
-        " id='" + getId() + "'" +
-        ", rating='" + getRating() + "'" +
-        ", reviewer='" + getReviewer() + "'" +
-        ", targetUser='" + getTargetUser() + "'" +
-        "}";
-  }
 
 
 }
