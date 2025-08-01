@@ -32,3 +32,5 @@ build/
 ### VS Code ###
 .vscode/
 local_ip.txt
+.DS_Store
+src/.DS_Store
