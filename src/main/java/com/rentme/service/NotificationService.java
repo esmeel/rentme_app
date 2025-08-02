@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.firebase.auth.internal.DownloadAccountResponse;
 import com.rentme.data_transfer_objects.ConfirmReceivedDTO;
 import com.rentme.data_transfer_objects.IdentityRequestDTO;
 import com.rentme.data_transfer_objects.LocationOrTimeRequestDTO;
@@ -30,6 +31,8 @@ import com.rentme.repository.UserRepository;
 
 @Service
 public class NotificationService {
+  @Autowired
+  private PushNotificationService pushService;
 
   @Autowired
   private NotificationRepository notificationRepo;
@@ -147,31 +150,19 @@ public class NotificationService {
     notification.setTotalPrice(prevNotification.getTotalPrice());
     notificationRepository.save(notification);
 
+    User target = userRepository.findById(notification.getReceiverId()).orElse(null);
+    String token = target.getFcmToken();
+    if (token == null) {
+      System.err.println("no token found for user:" + target.getName());
+      return;
+    }
+    pushService.sendNotification("RentMe", notification.getMessage(), token);
+
     // Delete the previous notification
-    if (prevNotification != null)
-      notificationRepository.delete(prevNotification);
+    notificationRepository.delete(prevNotification);
 
   }
 
-  /*
-   * private void hundelScheduleEntryNotif(ScheduleEntryDTO dto) { Notification prev =
-   * notificationRepository .findByTypeAndRelatedId(NotificationType.SCHEDULE_PROPOSAL,
-   * prev.getRelatedId()).get(0); if (prev == null) throw new
-   * RuntimeException("Previous notification not found");
-   *
-   * Notification n = new Notification(); n.setType(NotificationType.SCHEDULE_CONFIRMED);
-   * n.setSenderId(prev.getReceiverId()); n.setReceiverId(prev.getSenderId());
-   * n.setSenderName(prev.getSenderName()); n.setReceiverName(prev.getReceiverName());
-   * n.setMessage("Schedule confirmed by " + prev.getSenderName()); n.setToolId(prev.getToolId());
-   * n.setToolName(prev.getToolName()); n.setToolPicUrl(prev.getToolPicUrl());
-   * n.setAddress(prev.getAddress()); n.setNotes(prev.getNotes()); n.setStarts(prev.getStarts());
-   * n.setEnds(prev.getEnds()); n.setTotalPrice(prev.getTotalPrice());
-   * n.setRelatedId(prev.getRelatedId()); n.setCreatedAt(java.time.LocalDateTime.now());
-   * n.setIsRead(false); n.setTimeRequested(true); notificationRepository.save(n);
-   * notificationRepository.deleteByTypeAndRelatedId(NotificationType.SCHEDULE_PROPOSAL,
-   * prev.getRelatedId()); }
-   *
-   */
 
 
   private void hundelScheduleConfirmationRequestNotif(ScheduleConfirmationRequest dto) {
@@ -204,6 +195,9 @@ public class NotificationService {
     n.setRelatedId(dto.getRentalId());
     n.setCreatedAt(java.time.LocalDateTime.now());
     n.setIsRead(false);
+
+    User target = userRepository.findById(n.getReceiverId()).orElse(null);
+    pushService.sendNotification("RentMe", n.getMessage(), target.getFcmToken());
     System.out.println("Winn send now:");
     System.out.println(notificationRepository.save(n));
     System.out.println("🔔 Sent notification: " + n);
@@ -239,6 +233,9 @@ public class NotificationService {
     n.setRelatedId(dto.getRentalId());
     n.setCreatedAt(java.time.LocalDateTime.now());
     n.setIsRead(false);
+
+    User target = userRepository.findById(n.getReceiverId()).orElse(null);
+    pushService.sendNotification("RentMe", n.getMessage(), target.getFcmToken());
     notificationRepository.save(n);
 
   }
@@ -295,6 +292,9 @@ public class NotificationService {
     n.setFinalMeetingToHour(dto.getMeetingHourTo());
     notificationRepository.save(n);
     notificationRepository.deleteByTypeAndRelatedId(prev.getType(), prev.getRelatedId());
+
+    User target = userRepository.findById(n.getReceiverId()).orElse(null);
+    pushService.sendNotification("RentMe", n.getMessage(), target.getFcmToken());
   }
 
 
@@ -332,6 +332,9 @@ public class NotificationService {
 
 
     notificationRepository.save(n);
+
+    User target = userRepository.findById(n.getReceiverId()).orElse(null);
+    pushService.sendNotification("RentMe", n.getMessage(), target.getFcmToken());
     notificationRepository.deleteByTypeAndRelatedId(NotificationType.OWNER_LOCATION_REQUEST,
         prev.getRelatedId());
 
@@ -362,10 +365,14 @@ public class NotificationService {
     n.setRelatedId(dto.getRentalId());
     n.setCreatedAt(java.time.LocalDateTime.now());
     n.setIsRead(false);
-    notificationRepository.save(n);
     n.setFinalMeetingDate(prev.getFinalMeetingDate());
     n.setFinalMeetingFromHour(prev.getFinalMeetingFromHour());
     n.setFinalMeetingToHour(prev.getFinalMeetingToHour());
+
+    User target = userRepository.findById(n.getReceiverId()).orElse(null);
+    pushService.sendNotification("RentMe", n.getMessage(), target.getFcmToken());
+    notificationRepository.save(n);
+
   }
 
   private void hundelLocationOrTimeRequesNotif(LocationOrTimeRequestDTO dto) {
@@ -420,6 +427,9 @@ public class NotificationService {
     n.setFinalMeetingFromHour(prev.getFinalMeetingFromHour());
     n.setFinalMeetingToHour(prev.getFinalMeetingToHour());
     notificationRepository.delete(prev);
+
+    User target = userRepository.findById(n.getReceiverId()).orElse(null);
+    pushService.sendNotification("RentMe", n.getMessage(), target.getFcmToken());
     notificationRepository.save(n);
   }
 

@@ -34,3 +34,4 @@ build/
 local_ip.txt
 .DS_Store
 src/.DS_Store
+src/main/resources/rentme-91653-firebase-adminsdk-fbsvc-c16deef82a.json

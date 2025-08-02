@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +35,7 @@ import com.rentme.repository.ScheduleEntryRepository;
 import com.rentme.repository.UserRepository;
 import com.rentme.security.JwtUtil;
 import com.rentme.service.NotificationService;
+import com.rentme.service.PushNotificationService;
 import com.rentme.service.RentalService;
 import com.rentme.service.UserService;
 
@@ -44,6 +45,11 @@ import jakarta.transaction.Transactional;
 @RestController
 @RequestMapping("/api/rentals")
 public class RentalController {
+
+    @Autowired
+    private PushNotificationService pushService;
+
+
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final RentalService rentalService;
@@ -244,6 +250,8 @@ public class RentalController {
         notification.setToolPicUrl(rental.getTool().getImageUrl());
         notification.setToolId(rental.getTool().getId());
         notification.setTotalPrice(rental.getTotalPrice());
+        User target = userRepository.findById(notification.getReceiverId()).orElse(null);
+        pushService.sendNotification("RentMe", notification.getMessage(), target.getFcmToken());
 
 
         notificationRepository.save(notification);

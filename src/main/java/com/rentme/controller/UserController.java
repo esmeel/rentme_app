@@ -185,7 +185,8 @@ public class UserController {
         return ResponseEntity.ok(Map.of("token", token, "user", userDTO));
     }
 
-    //////////////////////
+
+
     /// google-login"
     @PostMapping("/google-login")
     public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequestDTO request) {
@@ -314,14 +315,21 @@ public class UserController {
     @PutMapping("/fcm-token")
     public ResponseEntity<?> updateFcmToken(@RequestBody Map<String, String> body,
             HttpServletRequest request) {
+
+        System.out.println("🔧 in fcm-token Received request: " + request);
+
         String token = body.get("token");
+        if (token == null) {
+            return ResponseEntity.badRequest().body("Missing token");
+        }
+        System.out.println("🔧 in fcm-token Received token: " + token);
+
         String email = jwtUtil.extractEmail(jwtUtil.extractTokenFromRequest(request));
 
         User user = userRepository.findByEmail(email);
         if (user == null) {
             System.err.println("User not found");
         }
-
         user.setFcmToken(token);
         userRepository.save(user);
 

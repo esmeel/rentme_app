@@ -6,8 +6,7 @@ public class FacebookLoginRequestDTO {
   private String photoUrl;
   private String accessToken;
 
-  public FacebookLoginRequestDTO() {
-  }
+  public FacebookLoginRequestDTO() {}
 
   public String getEmail() {
     return email;
